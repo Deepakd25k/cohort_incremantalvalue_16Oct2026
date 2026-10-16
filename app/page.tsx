@@ -205,7 +205,7 @@ export default function Home() {
               <div className="profile-top">
                 {hasPhoto ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={COURSE.photo} alt={COURSE.instructor} className="avatar" />
+                  <img src={COURSE.photo} alt={COURSE.instructor} className="avatar avatar-photo" width={400} height={400} />
                 ) : (
                   <div className="avatar avatar-ph" aria-hidden>
                     DG
@@ -385,10 +385,19 @@ export default function Home() {
         <section className="sec" data-section="about">
           <div className="wrap about-grid">
             <div>
-              <p className="kicker">Your mentor</p>
-              <h2>
-                Hi, I&apos;m <span className="hl">{COURSE.instructor}</span>.
-              </h2>
+              <div className="mentor-head">
+                {hasPhoto && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={COURSE.photo} alt={COURSE.instructor} className="mentor-photo" width={400} height={400} loading="lazy" />
+                )}
+                <div>
+                  <p className="kicker">Your mentor</p>
+                  <h2>
+                    Hi, I&apos;m <span className="hl">{COURSE.instructor}</span>.
+                  </h2>
+                  <p className="mentor-role">{COURSE.instructorTitle} · 5 years · ₹15Cr+ ad spend</p>
+                </div>
+              </div>
               <p className="body">
                 I lead performance marketing for D2C brands on Shopify: <b>fashion & apparel, beauty & personal care, FMCG, kidswear and card games</b>.
                 In the last 2 years I have spent <b>₹15Cr+</b> on ads across Meta, Google, Amazon, Blinkit and WhatsApp.

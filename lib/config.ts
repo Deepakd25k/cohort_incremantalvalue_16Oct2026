@@ -15,7 +15,7 @@ export const COURSE = {
   platform: "Google Meet",
   language: "Hinglish",
   contactEmail: "hello@incrementalvalue.in",
-  photo: "/deepak.jpg", // replace public/deepak.jpg with your photo
+  photo: "/deepak.webp", // round photo, transparent corners
 };
 
 // Accepts "cohort.incrementalvalue.in" or a full URL; a bad value must never crash the page.
