@@ -93,6 +93,7 @@ const WEEKS = [
 
 const PROOF: Proof[] = [
   { src: "/proof/lifetime-all.webp", w: 1400, h: 1102, stat: "₹69L+ spent · 20,253 purchases", label: "All-time, one ad account · 4.52X ROAS" },
+  { src: "/proof/amazon-sales.webp", w: 1400, h: 462, stat: "₹19.67L Amazon sales · 3,133 units", label: "Amazon Seller Central · 1 Sep – 16 Oct 2026" },
   { src: "/proof/last-30-days.webp", w: 1400, h: 567, stat: "6.52X ROAS · 1,942 purchases", label: "Last 30 days · ₹4.9L spent" },
   { src: "/proof/adset-roas.webp", w: 944, h: 164, stat: "7.53X ROAS · 9.14% CTR", label: "One ad set · ₹14 per landing page view" },
   { src: "/proof/cost-per-purchase.webp", w: 1400, h: 490, stat: "₹253 cost per purchase", label: "Last 30 days, across 4 campaigns" },

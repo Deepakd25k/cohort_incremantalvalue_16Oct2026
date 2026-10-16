@@ -45,7 +45,7 @@ export function ProofStrip({ items }: { items: Proof[] }) {
       onTouchStart={() => setPaused(true)}
     >
       <div className="proof-head">
-        <p className="mono proof-tag">LIVE FROM MY ADS MANAGER</p>
+        <p className="mono proof-tag">LIVE FROM MY DASHBOARDS</p>
         <div className="proof-nav">
           <button type="button" aria-label="Previous" onClick={() => (setPaused(true), step(-1))}>
             ‹
@@ -77,7 +77,7 @@ export function ProofStrip({ items }: { items: Proof[] }) {
           </figure>
         ))}
       </div>
-      <p className="proof-note">Real screenshots from Meta Ads Manager. Brand and campaign names hidden. Tap to zoom.</p>
+      <p className="proof-note">Real screenshots from Meta Ads Manager and Amazon Seller Central. Brand and campaign names hidden. Tap to zoom.</p>
 
       {open && (
         <div className="lightbox" onClick={() => setOpen(null)} role="dialog" aria-modal="true" aria-label={open.label}>
