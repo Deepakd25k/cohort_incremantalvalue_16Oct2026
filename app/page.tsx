@@ -1,0 +1,539 @@
+import fs from "fs";
+import path from "path";
+import Link from "next/link";
+import { COURSE } from "@/lib/config";
+import { CTA, EnrollProvider, LockIcon } from "@/components/Enroll";
+import { Faq, SeatCounter, StickyBar } from "@/components/Bits";
+import { PageTracker } from "@/components/PageTracker";
+import { Logo } from "@/components/Logo";
+
+const price = `₹${COURSE.price.toLocaleString("en-IN")}`;
+const hasPhoto = fs.existsSync(path.join(process.cwd(), "public", COURSE.photo));
+
+const STATS = [
+  { v: "₹15Cr+", l: "ad spend managed in the last 2 years" },
+  { v: "4.5X", l: "average blended ROAS" },
+  { v: "25% → 8%", l: "RTO cut for a D2C brand" },
+  { v: "₹1,500 → ₹500", l: "CAC, by fixing CRO & attribution" },
+];
+
+const LOOK = [
+  ["Meta Ads Manager", "Unit economics: COGS, shipping, RTO, discounts"],
+  ["ROAS", "Contribution margin (CM1, CM2, CM3)"],
+  ["CTR & CPM", "Leaks in the user journey, ad to delivery"],
+  ["What the platform reports", "What Shopify, GA4 & the bank say"],
+  ["“Let’s scale the winning ad”", "“Can the business afford to scale?”"],
+];
+
+const COMPARE = [
+  ["₹50,000 – ₹60,000", price + ", all inclusive"],
+  ["Recorded videos", "100% live, doubts solved in class"],
+  ["How to click buttons in Ads Manager", "How a D2C brand actually makes money"],
+  ["Dummy examples", "Real brand screenshots & sheets"],
+  ["Taught by course creators", "Taught by someone running ads right now"],
+  ["Upsell to an “advanced” course", "No upsells. Everything in one price"],
+  ["A certificate", "Skills you can explain in an interview"],
+];
+
+const WEEKS = [
+  {
+    t: "How D2C really works",
+    sessions: [
+      {
+        t: "The D2C machine, end to end",
+        b: ["How money flows: ad → website → checkout → warehouse → delivery → repeat", "The D2C stack: Shopify, checkout, Shiprocket, WhatsApp, GA4", "Mapping the user journey and finding where the brand leaks money"],
+      },
+      {
+        t: "Unit economics",
+        b: ["COGS, shipping, payment fees, RTO and discounts", "CM1, CM2, CM3 and break-even ROAS", "Why a brand at 4X ROAS can still lose money"],
+      },
+    ],
+  },
+  {
+    t: "Ads that make profit",
+    sessions: [
+      {
+        t: "Meta Ads beyond the dashboard",
+        b: ["Building ICPs & personas, then testing them", "Creative strategy, vernacular ads, account structure", "When to scale, and when not to"],
+      },
+      {
+        t: "Google, Amazon & quick commerce",
+        b: ["Search, Shopping & Performance Max for D2C", "Where Amazon & Blinkit fit in the plan", "Splitting budget across channels"],
+      },
+    ],
+  },
+  {
+    t: "Data & conversion",
+    sessions: [
+      {
+        t: "Tracking & attribution",
+        b: ["GA4, GTM, Pixel + Conversions API", "Why Meta, GA4 and Shopify never match, and what to trust", "Mapping data so you see the real picture"],
+      },
+      {
+        t: "CRO: get more from the same traffic",
+        b: ["Landing pages, product pages and checkout", "COD vs prepaid, and how to push prepaid", "How CAC went from ₹1,500 to ₹500 without more ad spend"],
+      },
+    ],
+  },
+  {
+    t: "RTO, retention, AI & career",
+    sessions: [
+      {
+        t: "RTO & retention",
+        b: ["The playbook that took RTO from 25% to 8%", "COD checks, NDR, delivery and customer communication", "WhatsApp & Bitespeed flows for repeat orders"],
+      },
+      {
+        t: "AI, founders & your career",
+        b: ["n8n automations for creatives and ad copies", "How to talk to founders and report numbers they care about", "Resume, reaching out to brands, and cracking interviews"],
+      },
+    ],
+  },
+];
+
+const TOOLS = ["Meta Ads", "Google Ads", "Shopify", "GA4", "GTM", "Pixel + CAPI", "Bitespeed", "Shiprocket", "Amazon", "Blinkit", "n8n"];
+
+const FOR = [
+  ["You run Meta ads but want to understand the whole business", "You have never opened Ads Manager"],
+  ["Freelancers who get stuck when a client asks “why?”", "You want a certificate more than the skill"],
+  ["Freshers & juniors preparing for D2C roles", "You want recordings to watch “later”"],
+  ["Early-stage founders who want to know what their team should do", "You are looking for secret hacks"],
+];
+
+const GET = [
+  ["8 live sessions", "Every Sat & Sun for 4 weekends, 3 hours each on Google Meet"],
+  ["30 min live doubts", "After every class. Bring your own account’s problems"],
+  ["Real brand teardowns", "Screenshots and numbers from brands I run"],
+  ["Ready-to-use sheets", "Unit economics calculator, RTO checklist, founder report, tracking checklist"],
+  ["n8n AI workflows", "Automations for creatives and ad copies"],
+  ["1 month WhatsApp support", "After the course ends, till " + COURSE.supportUntil],
+  ["Career kit", "Resume review, how to reach brands, interview prep from someone who hires"],
+];
+
+const FAQS = [
+  { q: "What language is the class in?", a: <p>Hinglish. All slides and sheets are in English.</p> },
+  {
+    q: "Will I get recordings?",
+    a: <p>No. This is a live-only cohort. No recordings means everyone shows up, asks questions, and actually learns.</p>,
+  },
+  { q: "I am a beginner. Can I join?", a: <p>You need to know the basics of Meta Ads Manager. If you have never run an ad, this is not the right course yet.</p> },
+  {
+    q: "What is the refund policy?",
+    a: (
+      <p>
+        Attend the first class. If you feel it is not for you, message us within 24 hours of that class and get a 100% refund. After that, no
+        refunds.
+      </p>
+    ),
+  },
+  { q: "Do I get a certificate?", a: <p>No. You get skills you can show in your work and explain in an interview. That matters more.</p> },
+  { q: "Is there a job guarantee?", a: <p>No. You get a career kit: resume help, how to reach out to brands, and interview prep from someone who hires D2C marketers.</p> },
+  { q: "What happens after I pay?", a: <p>You get a WhatsApp confirmation with the batch group link, class timings and the Google Meet link.</p> },
+  { q: "Are there any other charges or upsells?", a: <p>No. {price} is the full price. Nothing to buy later.</p> },
+];
+
+const Check = () => (
+  <svg className="ic ic-yes" viewBox="0 0 20 20" aria-hidden>
+    <path d="M5 10.5l3.2 3L15 6.5" />
+  </svg>
+);
+const Cross = () => (
+  <svg className="ic ic-no" viewBox="0 0 20 20" aria-hidden>
+    <path d="M6 6l8 8M14 6l-8 8" />
+  </svg>
+);
+
+export default function Home() {
+  return (
+    <EnrollProvider>
+      <PageTracker />
+
+      <header className="topbar">
+        <div className="wrap topbar-in">
+          <Logo />
+          <div className="topbar-right">
+            <span className="topbar-date">Batch starts {COURSE.batchStart}</span>
+            <CTA source="header" className="btn btn-sm">
+              Enroll · {price}
+            </CTA>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        {/* 1. HERO */}
+        <section className="hero grid-bg" data-section="hero">
+          <div className="wrap hero-grid">
+            <div className="hero-copy">
+              <p className="eyebrow">
+                <span className="dot" /> {COURSE.name}
+              </p>
+              <h1>
+                Most marketers know the <span className="hl">Ads Manager</span>. Very few know how a D2C brand{" "}
+                <span className="hl">actually makes money</span>.
+              </h1>
+              <p className="lead">
+                A 4-weekend <b>live</b> cohort that teaches you D2C the way founders see it: <b>unit economics, RTO, tracking, CRO, retention and AI</b>.
+                Not just which button to click.
+              </p>
+              <ul className="chips">
+                <li>Live on {COURSE.platform}</li>
+                <li>8 sessions · Sat &amp; Sun</li>
+                <li>Taught in {COURSE.language}</li>
+                <li>1 month WhatsApp support</li>
+              </ul>
+              <div className="hero-cta">
+                <CTA source="hero">Reserve my seat · {price}</CTA>
+                <div className="hero-cta-meta">
+                  <SeatCounter />
+                  <p className="micro">
+                    <LockIcon /> 100% refund if the first class is not for you
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <aside className="profile-card">
+              <div className="profile-top">
+                {hasPhoto ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={COURSE.photo} alt={COURSE.instructor} className="avatar" />
+                ) : (
+                  <div className="avatar avatar-ph" aria-hidden>
+                    DG
+                  </div>
+                )}
+                <div>
+                  <p className="kicker">Your mentor</p>
+                  <p className="profile-name">{COURSE.instructor}</p>
+                  <p className="profile-role">{COURSE.instructorTitle} · 5 yrs</p>
+                </div>
+              </div>
+              <dl className="stats">
+                {STATS.map((s) => (
+                  <div key={s.v}>
+                    <dt>{s.v}</dt>
+                    <dd>{s.l}</dd>
+                  </div>
+                ))}
+              </dl>
+              <p className="batch-line">
+                <span className="mono">BATCH</span> {COURSE.batchStart} → {COURSE.batchEnd}
+              </p>
+            </aside>
+          </div>
+        </section>
+
+        {/* 2. PROBLEM */}
+        <section className="sec" data-section="problem">
+          <div className="wrap narrow">
+            <p className="kicker">The problem</p>
+            <h2>
+              I hire D2C marketers. Here&apos;s where <span className="hl">most of them get stuck</span>.
+            </h2>
+            <p className="body">
+              I interview candidates for in-house D2C roles. Most have done a course. They know the words: ROAS, AOV, CPM. Then I ask one question:
+            </p>
+            <blockquote className="quote">
+              <span className="mono">INTERVIEW Q.</span>
+              “The brand is at <b>4X ROAS</b>. It is still <b>losing money</b>. Why?”
+            </blockquote>
+            <p className="body">
+              Almost everyone opens Meta Ads Manager to look for the answer. <b>The answer is usually not there.</b>
+            </p>
+
+            <div className="cmp" role="table" aria-label="Where marketers look vs where the answer is">
+              <div className="cmp-row cmp-head" role="row">
+                <div role="columnheader">Where they look</div>
+                <div role="columnheader" className="h-yes">Where the answer usually is</div>
+              </div>
+              {LOOK.map(([a, b]) => (
+                <div className="cmp-row" role="row" key={a}>
+                  <div role="cell" className="cmp-no">
+                    <Cross />
+                    {a}
+                  </div>
+                  <div role="cell" className="cmp-yes">
+                    <Check />
+                    {b}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <p className="callout">
+              In 2027, <b>AI will click most of the buttons</b>. The marketers who grow will be the ones who understand <span className="hl">the business behind the ads</span>.
+            </p>
+          </div>
+        </section>
+
+        {/* 3. DIFFERENT */}
+        <section className="sec sec-tint grid-bg" data-section="different">
+          <div className="wrap narrow">
+            <p className="kicker">Why this is different</p>
+            <h2>
+              Not another <span className="hl">“Meta Ads course”</span>
+            </h2>
+            <div className="cmp cmp-vs" role="table" aria-label="Typical course vs this cohort">
+              <div className="cmp-row cmp-head" role="row">
+                <div role="columnheader">Typical ₹50k course</div>
+                <div role="columnheader" className="cmp-head-us h-yes">
+                  <Logo light /> cohort
+                </div>
+              </div>
+              {COMPARE.map(([a, b]) => (
+                <div className="cmp-row" role="row" key={a}>
+                  <div role="cell" className="cmp-no">
+                    <Cross />
+                    {a}
+                  </div>
+                  <div role="cell" className="cmp-yes">
+                    <Check />
+                    {b}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* 4. CURRICULUM */}
+        <section className="sec" data-section="curriculum">
+          <div className="wrap">
+            <div className="narrow">
+              <p className="kicker">Curriculum</p>
+              <h2>
+                4 weekends. 8 live sessions. <span className="hl">The full D2C picture.</span>
+              </h2>
+              <p className="body">
+                {COURSE.schedule} · {COURSE.batchStart} to {COURSE.batchEnd}. Each class is 3 hours + 30 minutes of doubts.
+              </p>
+            </div>
+            <div className="weeks">
+              {WEEKS.map((w, i) => (
+                <details className="week" key={w.t} open={i === 0}>
+                  <summary>
+                    <span className="mono week-n">WEEKEND {i + 1}</span>
+                    <span className="week-t">{w.t}</span>
+                  </summary>
+                  <div className="week-body">
+                    {w.sessions.map((s, j) => (
+                      <div className="session" key={s.t}>
+                        <p className="session-t">
+                          <span className="mono">{j === 0 ? "SAT" : "SUN"}</span> {s.t}
+                        </p>
+                        <ul>
+                          {s.b.map((x) => (
+                            <li key={x}>{x}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </details>
+              ))}
+            </div>
+            <div className="tools">
+              <span className="mono">TOOLS YOU&apos;LL WORK WITH</span>
+              <ul>
+                {TOOLS.map((t) => (
+                  <li key={t}>{t}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* 5. WHO IT'S FOR */}
+        <section className="sec sec-tint" data-section="for">
+          <div className="wrap narrow">
+            <p className="kicker">Who it&apos;s for</p>
+            <h2>
+              Is this <span className="hl">right for you?</span>
+            </h2>
+            <div className="cmp" role="table" aria-label="Who this is for and not for">
+              <div className="cmp-row cmp-head" role="row">
+                <div role="columnheader" className="h-yes">Join if…</div>
+                <div role="columnheader">Skip if…</div>
+              </div>
+              {FOR.map(([a, b]) => (
+                <div className="cmp-row" role="row" key={a}>
+                  <div role="cell" className="cmp-yes">
+                    <Check />
+                    {a}
+                  </div>
+                  <div role="cell" className="cmp-no">
+                    <Cross />
+                    {b}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="body small">Only requirement: you know the basics of Meta Ads Manager.</p>
+          </div>
+        </section>
+
+        {/* 6. ABOUT + CASE */}
+        <section className="sec" data-section="about">
+          <div className="wrap about-grid">
+            <div>
+              <p className="kicker">Your mentor</p>
+              <h2>
+                Hi, I&apos;m <span className="hl">{COURSE.instructor}</span>.
+              </h2>
+              <p className="body">
+                I lead performance marketing for D2C brands on Shopify: <b>fashion & apparel, beauty & personal care, FMCG, kidswear and card games</b>.
+                In the last 2 years I have spent <b>₹15Cr+</b> on ads across Meta, Google, Amazon, Blinkit and WhatsApp.
+              </p>
+              <p className="body">
+                I work <b>directly with founders</b>. No middlemen. I know what they ask, which numbers they check, and what keeps them up at night. I also
+                interview marketers for in-house D2C roles, so I know exactly what brands look for.
+              </p>
+              <ul className="facts">
+                <li>
+                  <b>&lt;10%</b> RTO across brands, some under 4%
+                </li>
+                <li>
+                  <b>60%</b> prepaid orders on average
+                </li>
+                <li>
+                  <b>30%</b> average month-on-month growth
+                </li>
+                <li>
+                  <b>CM3 positive</b> brands, not just high ROAS
+                </li>
+                <li>
+                  <b>₹1,000 – ₹4,500</b> AOV range handled
+                </li>
+                <li>
+                  <b>Shopify</b> D2C brands across 5 categories
+                </li>
+              </ul>
+            </div>
+
+            <article className="case">
+              <p className="mono case-tag">CASE STUDY</p>
+              <h3>Same ₹15L ad spend. ROAS 0.8X → 2X.</h3>
+              <div className="case-ba">
+                <div>
+                  <span>Before</span>
+                  <b>0.8X</b>
+                  <small>ROAS</small>
+                  <b>25%</b>
+                  <small>RTO</small>
+                </div>
+                <div className="case-after">
+                  <span>After</span>
+                  <b>2X</b>
+                  <small>ROAS</small>
+                  <b>8%</b>
+                  <small>RTO</small>
+                </div>
+              </div>
+              <p className="case-h">What was broken</p>
+              <p>Delivery, customer communication, ads reaching the wrong people, and a weak website.</p>
+              <p className="case-h">What we fixed</p>
+              <ul>
+                <li>Tested ICPs & personas, then doubled down on the winners</li>
+                <li>Fixed attribution so we spent on the right audience</li>
+                <li>Launched vernacular creatives</li>
+                <li>Fixed CRO, delivery and customer communication</li>
+              </ul>
+              <p className="case-foot">You&apos;ll see the real screenshots in class.</p>
+            </article>
+          </div>
+        </section>
+
+        {/* 7. OFFER */}
+        <section className="sec offer" id="enroll-section" data-section="offer">
+          <div className="wrap offer-grid">
+            <div>
+              <p className="kicker kicker-light">What you get</p>
+              <h2>Everything you need. One price. No upsells.</h2>
+              <ul className="get">
+                {GET.map(([t, d]) => (
+                  <li key={t}>
+                    <Check />
+                    <div>
+                      <b>{t}</b>
+                      <span>{d}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="price-card">
+              <p className="mono">{COURSE.name.toUpperCase()}</p>
+              <p className="price">
+                {price}
+                <span>all inclusive</span>
+              </p>
+              <p className="price-sub">
+                Typical D2C courses charge <b>₹50,000+</b>
+              </p>
+              <ul className="price-facts">
+                <li>
+                  <span>Starts</span>
+                  <b>{COURSE.batchStart}</b>
+                </li>
+                <li>
+                  <span>Schedule</span>
+                  <b>{COURSE.schedule}</b>
+                </li>
+                <li>
+                  <span>Where</span>
+                  <b>Live on {COURSE.platform}</b>
+                </li>
+              </ul>
+              <CTA source="offer" className="btn btn-lg btn-block">
+                Reserve my seat · {price}
+              </CTA>
+              <SeatCounter />
+              <div className="guarantee">
+                <svg viewBox="0 0 24 24" aria-hidden>
+                  <path d="M12 3l7 3v6c0 4.2-2.9 7.7-7 9-4.1-1.3-7-4.8-7-9V6l7-3z" />
+                  <path d="M8.5 12l2.4 2.3L15.5 9.8" />
+                </svg>
+                <p>
+                  <b>First-class guarantee.</b> Attend class 1. Not for you? Message us within 24 hours for a 100% refund.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 8. FAQ + FINAL CTA */}
+        <section className="sec" data-section="faq">
+          <div className="wrap narrow">
+            <p className="kicker">FAQ</p>
+            <h2>Questions, answered</h2>
+            <Faq items={FAQS} />
+            <div className="final">
+              <h2>
+                Stop guessing inside the dashboard. <span className="hl">Learn how the business works.</span>
+              </h2>
+              <p className="body">
+                Batch starts {COURSE.batchStart} · Only {COURSE.seats} seats
+              </p>
+              <CTA source="final">Reserve my seat · {price}</CTA>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="footer">
+        <div className="wrap footer-in">
+          <Logo />
+          <nav>
+            <Link href="/terms">Terms</Link>
+            <Link href="/privacy">Privacy</Link>
+            <Link href="/refund">Refund policy</Link>
+            <Link href="/contact">Contact</Link>
+          </nav>
+          <p>© 2026 {COURSE.brand}. Results shared are from brands the mentor has worked with; your results depend on your work.</p>
+        </div>
+      </footer>
+
+      <StickyBar />
+    </EnrollProvider>
+  );
+}
