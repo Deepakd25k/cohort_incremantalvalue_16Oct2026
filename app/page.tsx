@@ -6,6 +6,7 @@ import { CTA, EnrollProvider, LockIcon } from "@/components/Enroll";
 import { Faq, SeatCounter, StickyBar } from "@/components/Bits";
 import { PageTracker } from "@/components/PageTracker";
 import { Logo } from "@/components/Logo";
+import { ProofStrip, type Proof } from "@/components/ProofStrip";
 
 const price = `₹${COURSE.price.toLocaleString("en-IN")}`;
 const hasPhoto = fs.existsSync(path.join(process.cwd(), "public", COURSE.photo));
@@ -88,6 +89,14 @@ const WEEKS = [
       },
     ],
   },
+];
+
+const PROOF: Proof[] = [
+  { src: "/proof/lifetime-all.webp", w: 1400, h: 1102, stat: "₹69L+ spent · 20,253 purchases", label: "All-time, one ad account · 4.52X ROAS" },
+  { src: "/proof/last-30-days.webp", w: 1400, h: 567, stat: "6.52X ROAS · 1,942 purchases", label: "Last 30 days · ₹4.9L spent" },
+  { src: "/proof/adset-roas.webp", w: 944, h: 164, stat: "7.53X ROAS · 9.14% CTR", label: "One ad set · ₹14 per landing page view" },
+  { src: "/proof/cost-per-purchase.webp", w: 1400, h: 490, stat: "₹253 cost per purchase", label: "Last 30 days, across 4 campaigns" },
+  { src: "/proof/lifetime-top4.webp", w: 1400, h: 554, stat: "₹47L spent · 16,084 purchases", label: "All-time, top 4 campaigns · 5.25X ROAS" },
 ];
 
 const TOOLS = ["Meta Ads", "Google Ads", "Shopify", "GA4", "GTM", "Pixel + CAPI", "Bitespeed", "Shiprocket", "Amazon", "Blinkit", "n8n"];
@@ -438,9 +447,10 @@ export default function Home() {
                 <li>Launched vernacular creatives</li>
                 <li>Fixed CRO, delivery and customer communication</li>
               </ul>
-              <p className="case-foot">You&apos;ll see the real screenshots in class.</p>
+              <p className="case-foot">You&apos;ll see the full breakdown in class.</p>
             </article>
           </div>
+          <ProofStrip items={PROOF} />
         </section>
 
         {/* 7. OFFER */}

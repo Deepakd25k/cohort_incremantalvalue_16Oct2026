@@ -14,6 +14,7 @@ const ALLOWED = new Set([
   "payment_failed",
   "payment_success",
   "faq_open",
+  "proof_open",
 ]);
 
 type Ev = { v: string; s: string; n: string; p?: Record<string, unknown>; path?: string; ref?: string; d?: string; u?: Record<string, string> };
