@@ -12,8 +12,12 @@ export default async function ThankYou({ searchParams }: { searchParams: Promise
   const { l } = await searchParams;
   let lead: { id: string; name: string; status: string } | undefined;
   if (l && hasDb()) {
-    const rows = (await db()`select id, name, status from leads where id = ${l.slice(0, 64)}`) as typeof lead[];
-    lead = rows[0];
+    try {
+      const rows = (await db()`select id, name, status from leads where id = ${l.slice(0, 64)}`) as typeof lead[];
+      lead = rows[0];
+    } catch (err) {
+      console.error("thank-you lookup failed", err);
+    }
   }
   const paid = lead?.status === "paid";
   const group = process.env.WHATSAPP_GROUP_LINK;

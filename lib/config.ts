@@ -18,4 +18,15 @@ export const COURSE = {
   photo: "/deepak.jpg", // replace public/deepak.jpg with your photo
 };
 
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+// Accepts "cohort.incrementalvalue.in" or a full URL; a bad value must never crash the page.
+function siteUrl() {
+  const raw = (process.env.NEXT_PUBLIC_SITE_URL || "").trim().replace(/\/+$/, "");
+  if (!raw) return "http://localhost:3000";
+  const withProto = /^https?:\/\//.test(raw) ? raw : `https://${raw}`;
+  try {
+    return new URL(withProto).origin;
+  } catch {
+    return "http://localhost:3000";
+  }
+}
+export const SITE_URL = siteUrl();

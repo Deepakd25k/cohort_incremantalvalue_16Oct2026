@@ -62,7 +62,9 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
   const from = rangeStart(range);
   const sql = db();
 
-  const [sess, visitors, steps, leadAgg, sections, devices, utmRows, daily, leads, activity] = await Promise.all([
+  let data;
+  try {
+    data = await Promise.all([
     sql`
       with s as (
         select session_id, min(ts) a, max(ts) b,
@@ -113,7 +115,20 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
         from e full outer join l on e.d = l.d order by coalesce(e.d, l.d) desc limit 60`,
     sql`select * from leads where created_at >= ${from}::timestamptz order by created_at desc limit 200`,
     sql`select ts, name, props, session_id, utm_source, device from events order by ts desc limit 40`,
-  ]);
+    ]);
+  } catch (err) {
+    console.error("admin queries failed", err);
+    return (
+      <main className="admin">
+        <div className="login">
+          <h3>Database not ready</h3>
+          <p>Open Neon → SQL Editor and run the contents of db/schema.sql, then reload this page.</p>
+          <p className="sub" style={{ marginTop: 8, color: "var(--muted)", fontSize: 12 }}>{String((err as Error).message).slice(0, 200)}</p>
+        </div>
+      </main>
+    );
+  }
+  const [sess, visitors, steps, leadAgg, sections, devices, utmRows, daily, leads, activity] = data;
 
   const s = sess[0];
   const step = Object.fromEntries(steps.map((r) => [r.name, n(r.c)]));
