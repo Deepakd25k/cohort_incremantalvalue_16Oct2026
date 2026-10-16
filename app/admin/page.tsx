@@ -4,6 +4,7 @@ import { db, hasDb } from "@/lib/db";
 import { isAdmin } from "@/lib/admin-auth";
 import { COURSE } from "@/lib/config";
 import { Logo } from "@/components/Logo";
+import { AutoRefresh } from "./AutoRefresh";
 
 export const metadata: Metadata = { title: "Admin · incrementalvalue", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -122,7 +123,8 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
       <main className="admin">
         <div className="login">
           <h3>Database not ready</h3>
-          <p>Open Neon → SQL Editor and run the contents of db/schema.sql, then reload this page.</p>
+          <AutoRefresh />
+          <p>Tables are created automatically. Check that DATABASE_URL is set in Vercel and redeploy.</p>
           <p className="sub" style={{ marginTop: 8, color: "var(--muted)", fontSize: 12 }}>{String((err as Error).message).slice(0, 200)}</p>
         </div>
       </main>
@@ -177,9 +179,12 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
               </Link>
             ))}
           </nav>
-          <a className="btn btn-sm" href="/api/admin/export">
-            Export leads CSV
-          </a>
+          <div className="admin-actions">
+            <AutoRefresh />
+            <a className="btn btn-sm" href="/api/admin/export">
+              Export leads CSV
+            </a>
+          </div>
         </div>
 
         <section className="kpis">

@@ -10,7 +10,7 @@ Next.js (App Router) landing page with lead capture, Razorpay checkout, Meta Pix
 
 ## Setup (one time)
 
-1. **Neon**: create a database, open the SQL editor and run `db/schema.sql`.
+1. **Neon**: connect a database to the Vercel project. Tables are created automatically on the first request (`db/schema.sql` is kept for reference).
 2. **Vercel**: import this repo, then add the env vars from `.env.example` (Project → Settings → Environment Variables).
 3. **Razorpay**:
    - Use your Key ID and Secret in `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET`.
@@ -25,7 +25,7 @@ Next.js (App Router) landing page with lead capture, Razorpay checkout, Meta Pix
 7. **Abandoned-cart reminder**: Vercel Hobby only runs cron once a day, so use [cron-job.org](https://cron-job.org) (free) instead:
    - Call `https://<your-domain>/api/cron/reminders?key=<CRON_SECRET>` every 10 minutes.
    - The reminder goes out 30 minutes after the form is filled, and only once per lead.
-8. **Admin**: set `ADMIN_PASSWORD`, then open `/admin`.
+8. **Admin**: set `ADMIN_PASSWORD`, then open `/admin`. Login lasts 90 days and the dashboard auto-refreshes every 15 seconds.
 
 ### AiSensy template text (suggested)
 

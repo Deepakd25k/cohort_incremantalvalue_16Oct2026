@@ -386,3 +386,10 @@ h2 { font-size: 27px; font-weight: 800; margin-bottom: 14px; }
   .kpis { grid-template-columns: repeat(6, 1fr); }
   .panels-2 { grid-template-columns: 1fr 1fr; }
 }
+
+.admin-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.live-pill { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line); background: #fff; color: var(--muted); font: 600 12px Inter, system-ui, sans-serif; padding: 8px 11px; border-radius: 999px; cursor: pointer; font-variant-numeric: tabular-nums; }
+.live-pill.on { color: var(--green); border-color: #bfe6d1; background: #f1fbf6; }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: #b4bccb; }
+.live-pill.on .live-dot { background: var(--green); animation: pulse-dot 1.6s ease-in-out infinite; }
+@keyframes pulse-dot { 50% { opacity: .35; } }
