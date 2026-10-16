@@ -12,6 +12,15 @@ export const metadata: Metadata = {
     title: "Most marketers know the Ads Manager. Few know how a D2C brand makes money.",
     description: `Live cohort · ${COURSE.batchStart} · ₹${COURSE.price.toLocaleString("en-IN")} · Only ${COURSE.seats} seats`,
     type: "website",
+    siteName: "incrementalvalue",
+    locale: "en_IN",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "The 2027 D2C Growth Cohort with Deepak Gupta · ₹2,999" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Learn how a D2C brand actually makes money",
+    description: `Live cohort · ${COURSE.batchStart} · ₹${COURSE.price.toLocaleString("en-IN")} · Only ${COURSE.seats} seats`,
+    images: ["/og.png"],
   },
   icons: { icon: "/icon.svg" },
 };
