@@ -12,6 +12,7 @@ export type LiveEvent = {
   ts: string;
   name: string;
   props: Record<string, unknown> | null;
+  visitor_id: string;
   session_id: string;
   utm_source: string | null;
   device: string | null;

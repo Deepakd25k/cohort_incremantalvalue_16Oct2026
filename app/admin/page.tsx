@@ -116,7 +116,8 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
              coalesce(l.leads, 0) leads, coalesce(l.paid, 0) paid
         from e full outer join l on e.d = l.d order by coalesce(e.d, l.d) desc limit 60`,
     sql`select * from leads where created_at >= ${from}::timestamptz order by created_at desc limit 200`,
-    sql`select id::text as id, ts, name, props, session_id, utm_source, device from events order by id desc limit 40`,
+    sql`select id::text as id, ts, name, props, visitor_id, session_id, utm_source, device from events
+          where ts > now() - interval '5 minutes' order by id desc limit 300`,
     ]);
   } catch (err) {
     console.error("admin queries failed", err);
@@ -322,7 +323,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
 
           <section className="panel">
             <h3>Live activity</h3>
-            <p className="sub">New events appear here within ~2 seconds</p>
+            <p className="sub">Last 5 minutes only · new events appear within ~2 seconds</p>
             <LiveFeed initial={activity.map((a) => ({ ...a, ts: new Date(a.ts).toISOString() })) as LiveEvent[]} />
           </section>
         </div>
