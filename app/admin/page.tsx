@@ -4,7 +4,8 @@ import { db, hasDb } from "@/lib/db";
 import { isAdmin } from "@/lib/admin-auth";
 import { COURSE } from "@/lib/config";
 import { Logo } from "@/components/Logo";
-import { AutoRefresh } from "./AutoRefresh";
+import { AutoRefresh, type LiveEvent } from "./AutoRefresh";
+import { LiveFeed } from "./LiveFeed";
 
 export const metadata: Metadata = { title: "Admin · incrementalvalue", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -115,7 +116,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
              coalesce(l.leads, 0) leads, coalesce(l.paid, 0) paid
         from e full outer join l on e.d = l.d order by coalesce(e.d, l.d) desc limit 60`,
     sql`select * from leads where created_at >= ${from}::timestamptz order by created_at desc limit 200`,
-    sql`select ts, name, props, session_id, utm_source, device from events order by ts desc limit 40`,
+    sql`select id::text as id, ts, name, props, session_id, utm_source, device from events order by id desc limit 40`,
     ]);
   } catch (err) {
     console.error("admin queries failed", err);
@@ -180,7 +181,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
             ))}
           </nav>
           <div className="admin-actions">
-            <AutoRefresh />
+            <AutoRefresh lastId={activity[0]?.id ?? "0"} />
             <a className="btn btn-sm" href="/api/admin/export">
               Export leads CSV
             </a>
@@ -321,31 +322,8 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
 
           <section className="panel">
             <h3>Live activity</h3>
-            <p className="sub">Latest 40 events</p>
-            <div className="tbl-wrap">
-              <table className="tbl">
-                <thead>
-                  <tr>
-                    <th>Time</th>
-                    <th>Event</th>
-                    <th>Detail</th>
-                    <th>Source</th>
-                    <th>Session</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {activity.map((a, i) => (
-                    <tr key={i}>
-                      <td>{time(a.ts)}</td>
-                      <td>{a.name}</td>
-                      <td>{Object.values(a.props || {}).join(", ").slice(0, 40)}</td>
-                      <td>{a.utm_source || "direct"}</td>
-                      <td style={{ fontFamily: "var(--mono)", fontSize: 11 }}>{String(a.session_id).slice(0, 6)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <p className="sub">New events appear here within ~2 seconds</p>
+            <LiveFeed initial={activity.map((a) => ({ ...a, ts: new Date(a.ts).toISOString() })) as LiveEvent[]} />
           </section>
         </div>
 

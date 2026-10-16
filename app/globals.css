@@ -393,3 +393,5 @@ h2 { font-size: 27px; font-weight: 800; margin-bottom: 14px; }
 .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #b4bccb; }
 .live-pill.on .live-dot { background: var(--green); animation: pulse-dot 1.6s ease-in-out infinite; }
 @keyframes pulse-dot { 50% { opacity: .35; } }
+.tbl tr.row-new td { animation: row-flash 2.5s ease-out; }
+@keyframes row-flash { from { background: #e3f5ec; } to { background: transparent; } }
