@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { COURSE } from "@/lib/config";
-import { cookie, fbc, ga, ids, pixel, track, utm } from "@/lib/track-client";
+import { cookie, fbc, ga, ids, isInternal, pixel, track, utm } from "@/lib/track-client";
 
 const EnrollCtx = createContext<{ open: (source: string) => void }>({ open: () => {} });
 export const useEnroll = () => useContext(EnrollCtx);
@@ -73,6 +73,7 @@ export function EnrollProvider({ children }: { children: ReactNode }) {
           utm: utm(),
           fbp: cookie("_fbp"),
           fbc: fbc(),
+          test: isInternal(),
         }),
       });
       const data = await res.json();
@@ -173,6 +174,7 @@ export function EnrollProvider({ children }: { children: ReactNode }) {
                     placeholder="10-digit number"
                   />
                 </div>
+                <span className="field-hint">We&apos;ll send your enrollment details and class updates here.</span>
               </label>
               <label>
                 Email

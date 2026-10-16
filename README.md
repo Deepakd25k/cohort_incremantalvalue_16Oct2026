@@ -27,17 +27,55 @@ Next.js (App Router) landing page with lead capture, Razorpay checkout, Meta Pix
    - The reminder goes out 30 minutes after the form is filled, and only once per lead.
 8. **Admin**: set `ADMIN_PASSWORD`, then open `/admin`. Login lasts 90 days and the dashboard auto-refreshes every 15 seconds.
 
-### AiSensy template text (suggested)
+### AiSensy templates (create these 4, get them approved, then make one *API campaign* per template and set it "Live")
 
-**`AISENSY_REMINDER_CAMPAIGN`**, 2 params: `{{1}}` first name, `{{2}}` link
+Rules that keep the WhatsApp number safe:
+- Pick the right **category**. Meta re-categorises templates whose content does not match.
+- **No offers or discounts in Utility templates.**
+- Only people who filled the form get messages. The form tells them updates come on WhatsApp.
+- The payment reminder goes **once per person**, never in bulk, and never to anyone marked "opt-out" in /admin.
+- Params fill `{{1}}`, `{{2}}`… in the order listed.
 
-> Hi {{1}}, your seat in the 2027 D2C Growth Cohort is not confirmed yet. Payment was not completed.
-> Only 50 seats in this batch. Complete your enrollment here: {{2}}
+**1. `enrollment_confirmed`**: Category **Utility**. Env: `AISENSY_CONFIRM_CAMPAIGN`. Params: name, enrollment ID, batch start, group link.
 
-**`AISENSY_CONFIRM_CAMPAIGN`**, 3 params: `{{1}}` first name, `{{2}}` batch start, `{{3}}` group link
+> Hi {{1}}, your enrollment in the 2027 D2C Growth Cohort is confirmed.
+> Enrollment ID: {{2}}
+> Batch starts: {{3}}
+> Join the batch WhatsApp group for class links and sheets: {{4}}
 
-> Hi {{1}}, you're in! 🎉 Your seat in the 2027 D2C Growth Cohort is confirmed.
-> Batch starts {{2}}. Join the batch WhatsApp group for class links and sheets: {{3}}
+**2. `payment_reminder`**: Category **Marketing** (Meta treats "you didn't complete checkout" reminders as marketing). Env: `AISENSY_REMINDER_CAMPAIGN`. Params: name, link.
+
+> Hi {{1}}, you started enrolling for the 2027 D2C Growth Cohort but the payment didn't go through.
+> You can complete it here: {{2}}
+> Reply STOP if you don't want messages about this.
+
+**3. `owner_sale_alert`**: Category **Utility**, sent only to `OWNER_WHATSAPP`. Env: `AISENSY_OWNER_SALE_CAMPAIGN`. Params: name, profile, source, seats sold, total revenue.
+
+> New enrollment: {{1}} ({{2}})
+> Source: {{3}}
+> Seats sold: {{4}} · Revenue so far: {{5}}
+
+**4. `owner_daily_summary`**: Category **Utility**, sent only to `OWNER_WHATSAPP` at 08:45 IST. Env: `AISENSY_OWNER_SUMMARY_CAMPAIGN`. Params: date, visitors, sessions, leads, enrolled, revenue, conversion, total seats sold, top campaign.
+
+> Daily report for {{1}}
+> Visitors: {{2}} · Sessions: {{3}}
+> Leads: {{4}} · Enrolled: {{5}} · Revenue: {{6}}
+> Conversion: {{7}}
+> Seats sold so far: {{8}}
+> Top campaign: {{9}}
+
+`OWNER_WHATSAPP` must be your personal number, not the WhatsApp Business number AiSensy sends from.
+
+### Admin extras
+
+- **Your visits are excluded.** Opening `/admin` marks that browser, so its visits never count and nothing is sent to Meta or GA4. Toggle it with the "My visits excluded" button. Payments made from that browser are tagged `test` and left out of revenue.
+- **Bots are filtered.** Crawlers, link previews and automation tools are dropped before they reach the database.
+- **Reset test data** deletes all visits and every unpaid or test lead. Real paid students are never deleted. Use it once on launch day.
+- **Follow-ups** lists everyone who filled the form but didn't pay:
+  - The WhatsApp button opens *your own* WhatsApp with a message already typed. Send these one person at a time.
+  - Set a status and add notes for each person.
+  - Tick opt-out if someone asks you to stop.
+- **Enrolled students**: mark class 1 attendance and refund status. Export the list with "Students CSV".
 
 ## Funnel and tracking
 

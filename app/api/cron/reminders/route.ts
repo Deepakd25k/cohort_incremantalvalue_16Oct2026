@@ -17,7 +17,7 @@ export async function GET(req: Request) {
   const sql = db();
   const due = (await sql`
     select id, name, phone from leads
-     where status <> 'paid' and reminder_sent_at is null
+     where status <> 'paid' and reminder_sent_at is null and not wa_opt_out
        and created_at < now() - interval '30 minutes'
        and created_at > now() - interval '48 hours'
        and not exists (select 1 from leads l2 where l2.phone = leads.phone and l2.status = 'paid')

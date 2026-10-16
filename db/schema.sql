@@ -48,3 +48,12 @@ create table if not exists leads (
 create index if not exists leads_created_idx on leads (created_at);
 create index if not exists leads_phone_idx on leads (phone);
 create index if not exists leads_status_idx on leads (status);
+
+-- Added later (also applied automatically by lib/db.ts)
+alter table leads add column if not exists is_test boolean not null default false;
+alter table leads add column if not exists wa_opt_out boolean not null default false;
+alter table leads add column if not exists followup_status text not null default 'new';
+alter table leads add column if not exists followup_note text;
+alter table leads add column if not exists followed_up_at timestamptz;
+alter table leads add column if not exists attended_class1 boolean not null default false;
+alter table leads add column if not exists refund_status text not null default 'none';

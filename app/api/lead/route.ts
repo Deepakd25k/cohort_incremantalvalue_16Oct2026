@@ -34,24 +34,25 @@ export async function POST(req: Request) {
   if (existing[0]?.status === "paid")
     return NextResponse.json({ error: "You are already enrolled. Check WhatsApp for details." }, { status: 409 });
 
+  const isTest = b.test === true;
   const id = existing[0]?.id || crypto.randomUUID();
   const amount = COURSE.price * 100;
   const order = await createOrder(amount, id.slice(0, 40), { lead_id: id, phone, name });
 
   await sql`
     insert into leads (id, name, phone, email, profile, status, amount, razorpay_order_id, visitor_id, session_id,
-                       fbp, fbc, utm_source, utm_medium, utm_campaign, utm_content, utm_term)
+                       fbp, fbc, utm_source, utm_medium, utm_campaign, utm_content, utm_term, is_test)
     values (${id}, ${name}, ${phone}, ${email}, ${profile}, 'checkout', ${amount}, ${order.id},
             ${clip(b.visitorId, 64)}, ${clip(b.sessionId, 64)}, ${clip(b.fbp)}, ${clip(b.fbc)},
-            ${clip(u.utm_source)}, ${clip(u.utm_medium)}, ${clip(u.utm_campaign)}, ${clip(u.utm_content)}, ${clip(u.utm_term)})
+            ${clip(u.utm_source)}, ${clip(u.utm_medium)}, ${clip(u.utm_campaign)}, ${clip(u.utm_content)}, ${clip(u.utm_term)}, ${isTest})
     on conflict (id) do update set
       name = excluded.name, email = excluded.email, profile = excluded.profile, status = 'checkout',
-      razorpay_order_id = excluded.razorpay_order_id, updated_at = now(),
+      razorpay_order_id = excluded.razorpay_order_id, updated_at = now(), is_test = excluded.is_test,
       fbp = coalesce(excluded.fbp, leads.fbp), fbc = coalesce(excluded.fbc, leads.fbc)`;
 
   const ctx = { email, phone, name, fbp: b.fbp, fbc: b.fbc, ip: clientIp(req), ua: req.headers.get("user-agent"), externalId: id };
   const eventIds = { lead: `lead_${id}`, checkout: `ic_${order.id}` };
-  await Promise.all([
+  if (!isTest) await Promise.all([
     sendCapi({ ...ctx, eventName: "Lead", eventId: eventIds.lead }),
     sendCapi({ ...ctx, eventName: "InitiateCheckout", eventId: eventIds.checkout, value: COURSE.price }),
   ]);

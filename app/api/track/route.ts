@@ -1,5 +1,6 @@
 import { db, hasDb } from "@/lib/db";
 import { clip } from "@/lib/request";
+import { isBot } from "@/lib/bots";
 
 const ALLOWED = new Set([
   "page_view",
@@ -18,7 +19,7 @@ const ALLOWED = new Set([
 type Ev = { v: string; s: string; n: string; p?: Record<string, unknown>; path?: string; ref?: string; d?: string; u?: Record<string, string> };
 
 export async function POST(req: Request) {
-  if (!hasDb()) return new Response(null, { status: 204 });
+  if (!hasDb() || isBot(req.headers.get("user-agent"))) return new Response(null, { status: 204 });
   let body: Ev | Ev[];
   try {
     body = JSON.parse(await req.text());

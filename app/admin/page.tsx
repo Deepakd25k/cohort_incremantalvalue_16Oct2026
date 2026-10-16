@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { db, hasDb } from "@/lib/db";
 import { isAdmin } from "@/lib/admin-auth";
-import { COURSE } from "@/lib/config";
+import { COURSE, SITE_URL } from "@/lib/config";
 import { Logo } from "@/components/Logo";
 import { AutoRefresh, type LiveEvent } from "./AutoRefresh";
 import { LiveFeed } from "./LiveFeed";
+import { InternalBadge, ResetButton } from "./AdminTools";
+import { FollowUps, Students, type LeadRow } from "./LeadTables";
 
 export const metadata: Metadata = { title: "Admin · incrementalvalue", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -88,7 +90,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
                count(*) filter (where reminder_sent_at is not null)::int reminded,
                count(*) filter (where status = 'paid' and reminder_sent_at is not null)::int recovered,
                coalesce(sum(amount) filter (where status = 'paid'), 0)::bigint revenue
-          from leads where created_at >= ${from}::timestamptz`,
+          from leads where created_at >= ${from}::timestamptz and not is_test`,
     sql`select props->>'id' id, count(distinct session_id)::int c from events
          where name = 'section_view' and ts >= ${from}::timestamptz group by 1`,
     sql`select coalesce(device, '?') device, count(distinct session_id)::int c from events
@@ -101,7 +103,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
       l as (select coalesce(utm_source, '(direct)') src, coalesce(utm_campaign, '–') camp, coalesce(utm_content, '–') ad,
                    count(*)::int leads, count(*) filter (where status = 'paid')::int paid,
                    coalesce(sum(amount) filter (where status = 'paid'), 0)::bigint rev
-              from leads where created_at >= ${from}::timestamptz group by 1, 2, 3)
+              from leads where created_at >= ${from}::timestamptz and not is_test group by 1, 2, 3)
       select coalesce(a.src, l.src) src, coalesce(a.camp, l.camp) camp, coalesce(a.ad, l.ad) ad,
              coalesce(a.sessions, 0) sessions, coalesce(l.leads, 0) leads, coalesce(l.paid, 0) paid, coalesce(l.rev, 0) rev
         from a full outer join l on a.src = l.src and a.camp = l.camp and a.ad = l.ad
@@ -115,7 +117,8 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
       select to_char(coalesce(e.d, l.d), 'DD Mon') as day, coalesce(e.sessions, 0) sessions,
              coalesce(l.leads, 0) leads, coalesce(l.paid, 0) paid
         from e full outer join l on e.d = l.d order by coalesce(e.d, l.d) desc limit 60`,
-    sql`select * from leads where created_at >= ${from}::timestamptz order by created_at desc limit 200`,
+    sql`select * from leads where status <> 'paid' order by created_at desc limit 300`,
+    sql`select * from leads where status = 'paid' order by paid_at`,
     sql`select id::text as id, ts, name, props, visitor_id, session_id, utm_source, device from events
           where ts > now() - interval '5 minutes' order by id desc limit 300`,
     ]);
@@ -132,7 +135,10 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
       </main>
     );
   }
-  const [sess, visitors, steps, leadAgg, sections, devices, utmRows, daily, leads, activity] = data;
+  const [sess, visitors, steps, leadAgg, sections, devices, utmRows, daily, pending, students, activity] = data;
+  const iso = (v: unknown) => (v ? new Date(v as string).toISOString() : null);
+  const toRows = (rows: typeof pending) =>
+    rows.map((r) => ({ ...r, created_at: iso(r.created_at), paid_at: iso(r.paid_at), reminder_sent_at: iso(r.reminder_sent_at) })) as LeadRow[];
 
   const s = sess[0];
   const step = Object.fromEntries(steps.map((r) => [r.name, n(r.c)]));
@@ -183,9 +189,14 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
           </nav>
           <div className="admin-actions">
             <AutoRefresh lastId={activity[0]?.id ?? "0"} />
+            <InternalBadge />
             <a className="btn btn-sm" href="/api/admin/export">
-              Export leads CSV
+              Leads CSV
             </a>
+            <a className="btn btn-sm" href="/api/admin/export?status=paid">
+              Students CSV
+            </a>
+            <ResetButton />
           </div>
         </div>
 
@@ -329,51 +340,18 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
         </div>
 
         <section className="panel">
-          <h3>Leads ({fmt(leads.length)})</h3>
+          <h3>Follow-ups: filled the form, not paid ({fmt(pending.length)})</h3>
           <p className="sub">
-            Everyone who filled the form. Seats sold overall show on the page once {COURSE.showSeatCounterAfter} are paid.
+            One automatic WhatsApp reminder goes 30 min after the form. After that, follow up personally: the WhatsApp button opens your own
+            WhatsApp with the message typed. Tick opt-out if someone asks not to be messaged.
           </p>
-          <div className="tbl-wrap">
-            <table className="tbl">
-              <thead>
-                <tr>
-                  <th>Created</th>
-                  <th>Name</th>
-                  <th>WhatsApp</th>
-                  <th>Email</th>
-                  <th>Profile</th>
-                  <th>Status</th>
-                  <th>Reminder</th>
-                  <th>Source / campaign</th>
-                </tr>
-              </thead>
-              <tbody>
-                {leads.map((l) => (
-                  <tr key={l.id}>
-                    <td>{time(l.created_at)}</td>
-                    <td>{l.name}</td>
-                    <td>
-                      <a href={`https://wa.me/${l.phone}`} target="_blank" rel="noopener noreferrer">
-                        +{l.phone}
-                      </a>
-                    </td>
-                    <td>{l.email}</td>
-                    <td>{l.profile || "–"}</td>
-                    <td>
-                      <span className={`tag tag-${l.status}`}>{l.status === "checkout" ? "not paid" : l.status}</span>
-                    </td>
-                    <td>{l.reminder_sent_at ? time(l.reminder_sent_at) : "–"}</td>
-                    <td>{[l.utm_source, l.utm_campaign].filter(Boolean).join(" / ") || "direct"}</td>
-                  </tr>
-                ))}
-                {!leads.length && (
-                  <tr>
-                    <td colSpan={8}>No leads yet.</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+          <FollowUps rows={toRows(pending)} siteUrl={SITE_URL} batchStart={COURSE.batchStart} />
+        </section>
+
+        <section className="panel">
+          <h3>Enrolled students</h3>
+          <p className="sub">Mark class 1 attendance: refunds are only for students who attended class 1 and asked within 24 hours.</p>
+          <Students rows={toRows(students)} />
         </section>
       </div>
     </main>

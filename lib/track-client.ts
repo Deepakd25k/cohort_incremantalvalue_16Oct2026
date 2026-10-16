@@ -62,10 +62,18 @@ export function utm(): Record<string, string> {
   }
 }
 
+// Browsers that opened /admin (the owner) and automated browsers are never tracked.
+export function isInternal() {
+  if (typeof window === "undefined") return true;
+  if (navigator.webdriver) return true;
+  return store.get("iv_internal", ls()) === "1";
+}
+export const setInternal = (on: boolean) => store.set("iv_internal", on ? "1" : "", ls());
+
 const device = () => (typeof window === "undefined" ? "" : window.innerWidth < 768 ? "mobile" : window.innerWidth < 1100 ? "tablet" : "desktop");
 
 export function track(n: string, p: Dict = {}) {
-  if (typeof window === "undefined") return;
+  if (isInternal()) return;
   const { visitorId, sessionId } = ids();
   const body = JSON.stringify({
     v: visitorId,
@@ -84,10 +92,12 @@ export function track(n: string, p: Dict = {}) {
 }
 
 export function pixel(event: string, params: Dict = {}, eventID?: string) {
+  if (isInternal()) return;
   window.fbq?.("track", event, params, eventID ? { eventID } : undefined);
 }
 
 export function ga(event: string, params: Dict = {}) {
+  if (isInternal()) return;
   window.gtag?.("event", event, params);
 }
 
