@@ -24,10 +24,10 @@ export default async function ThankYou({ searchParams }: { searchParams: Promise
       console.error("thank-you verify failed", err);
     }
   }
-  let lead: { id: string; name: string; status: string } | undefined;
+  let lead: { id: string; name: string; phone: string; status: string } | undefined;
   if (l && hasDb()) {
     try {
-      const rows = (await db()`select id, name, status from leads where id = ${l.slice(0, 64)}`) as typeof lead[];
+      const rows = (await db()`select id, name, phone, status from leads where id = ${l.slice(0, 64)}`) as typeof lead[];
       lead = rows[0];
     } catch (err) {
       console.error("thank-you lookup failed", err);
@@ -53,31 +53,25 @@ export default async function ThankYou({ searchParams }: { searchParams: Promise
                 <path d="M5 12.5l4.5 4.5L19 7.5" />
               </svg>
             </div>
-            {paid ? (
-              <>
-                <h1>You&apos;re in{lead ? `, ${lead.name.split(" ")[0]}` : ""}!</h1>
-                <p>
-                  Your seat in <b>{COURSE.name}</b> is confirmed. Batch starts <b>{COURSE.batchStart}</b>, {COURSE.schedule}.
-                </p>
-                <p style={{ marginTop: 10 }}>Next step: join the batch WhatsApp group. Class links and sheets are shared there.</p>
-                {group && (
-                  <p style={{ marginTop: 20 }}>
-                    <a className="btn btn-lg" href={group} target="_blank" rel="noopener noreferrer">
-                      Join the WhatsApp group
-                    </a>
-                  </p>
-                )}
-                <PurchasePixel leadId={lead!.id} value={COURSE.price} />
-              </>
-            ) : (
-              <>
-                <h1>Payment received. Confirming…</h1>
-                <p>
-                  We are confirming your payment with the bank. You will get a WhatsApp message with the batch details in a few minutes. If you don&apos;t,
-                  write to <a href={`mailto:${COURSE.contactEmail}`}>{COURSE.contactEmail}</a>.
-                </p>
-              </>
+            <h1>You&apos;re in{lead ? `, ${lead.name.split(" ")[0]}` : ""}!</h1>
+            <p>
+              Payment received for <b>{COURSE.name}</b>. Batch starts <b>{COURSE.batchStart}</b>, {COURSE.schedule}.
+            </p>
+            <p style={{ marginTop: 10 }}>
+              <b>You don&apos;t need to wait here.</b> I&apos;ll personally send your batch details, class links and group invite on WhatsApp
+              {lead?.phone ? ` (+${lead.phone})` : ""} within a few hours.
+            </p>
+            {paid && group && (
+              <p style={{ marginTop: 20 }}>
+                <a className="btn btn-lg" href={group} target="_blank" rel="noopener noreferrer">
+                  Join the WhatsApp group
+                </a>
+              </p>
             )}
+            <p style={{ marginTop: 16, fontSize: 13 }}>
+              Questions? Write to <a href={`mailto:${COURSE.contactEmail}`}>{COURSE.contactEmail}</a>.
+            </p>
+            {paid && <PurchasePixel leadId={lead!.id} value={COURSE.price} />}
           </div>
         </div>
       </main>

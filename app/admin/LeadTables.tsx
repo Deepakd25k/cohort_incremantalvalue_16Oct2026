@@ -16,6 +16,7 @@ export type LeadRow = {
   is_test: boolean;
   wa_opt_out: boolean;
   reminder_sent_at: string | null;
+  confirmation_sent_at: string | null;
   followup_status: string;
   followup_note: string | null;
   attended_class1: boolean;
@@ -160,19 +161,28 @@ export function FollowUps({ rows, siteUrl, batchStart }: { rows: LeadRow[]; site
   );
 }
 
-export function Students({ rows }: { rows: LeadRow[] }) {
+// Your own WhatsApp opens with the batch details typed in; you review and press send.
+function detailsLink(l: LeadRow, batchStart: string) {
+  const msg =
+    `Hi ${l.name.split(" ")[0]}, Deepak here from incrementalvalue. Thank you for joining the 2027 D2C Growth Cohort!\n\n` +
+    `Enrollment ID: ${l.id.slice(0, 8).toUpperCase()}\nBatch starts: ${batchStart}\n\n` +
+    `I'll share the class link and group invite here. Save this number so you don't miss updates.`;
+  return `https://wa.me/${l.phone}?text=${encodeURIComponent(msg)}`;
+}
+
+export function Students({ rows, batchStart }: { rows: LeadRow[]; batchStart: string }) {
   const [data, setData] = useState(rows);
   useEffect(() => setData(rows), [rows]);
-  const update = (id: string, patch: Partial<LeadRow>) => {
+  const update = (id: string, patch: Partial<LeadRow>, body: Record<string, unknown> = patch) => {
     setData((d) => d.map((r) => (r.id === id ? { ...r, ...patch } : r)));
-    save(id, patch);
+    save(id, body);
   };
   const attended = data.filter((r) => r.attended_class1).length;
 
   return (
     <>
       <p className="live-sum">
-        <b>{data.length}</b> enrolled · <b>{attended}</b> attended class 1 ·{" "}
+        <b>{data.length}</b> enrolled · <b>{data.filter((r) => !r.confirmation_sent_at).length}</b> waiting for details · <b>{attended}</b> attended class 1 ·{" "}
         <b>{data.filter((r) => r.refund_status !== "none").length}</b> refund requests
       </p>
       <div className="tbl-wrap">
@@ -186,6 +196,7 @@ export function Students({ rows }: { rows: LeadRow[] }) {
               <th>Profile</th>
               <th>Paid</th>
               <th>Enrollment ID</th>
+              <th>Details</th>
               <th>Class 1</th>
               <th>Refund</th>
             </tr>
@@ -209,6 +220,23 @@ export function Students({ rows }: { rows: LeadRow[] }) {
                   {l.id.slice(0, 8).toUpperCase()}
                 </td>
                 <td>
+                  {l.confirmation_sent_at ? (
+                    <span className="tag tag-paid" title={fmtTime(l.confirmation_sent_at)} onClick={() => confirm("Mark as not sent?") && update(l.id, { confirmation_sent_at: null }, { details_sent: false })} style={{ cursor: "pointer" }}>
+                      Sent ✓
+                    </span>
+                  ) : (
+                    <a
+                      className="btn btn-sm"
+                      href={detailsLink(l, batchStart)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => update(l.id, { confirmation_sent_at: new Date().toISOString() }, { details_sent: true })}
+                    >
+                      Send details
+                    </a>
+                  )}
+                </td>
+                <td>
                   <input type="checkbox" checked={l.attended_class1} onChange={(e) => update(l.id, { attended_class1: e.target.checked })} />
                 </td>
                 <td>
@@ -222,7 +250,7 @@ export function Students({ rows }: { rows: LeadRow[] }) {
             ))}
             {!data.length && (
               <tr>
-                <td colSpan={9}>No students yet.</td>
+                <td colSpan={10}>No students yet.</td>
               </tr>
             )}
           </tbody>

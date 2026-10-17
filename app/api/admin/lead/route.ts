@@ -20,6 +20,8 @@ export async function POST(req: Request) {
     await sql`update leads set wa_opt_out = ${b.wa_opt_out}, updated_at = now() where id = ${b.id}`;
   if (typeof b.attended_class1 === "boolean")
     await sql`update leads set attended_class1 = ${b.attended_class1}, updated_at = now() where id = ${b.id}`;
+  if (typeof b.details_sent === "boolean")
+    await sql`update leads set confirmation_sent_at = ${b.details_sent ? new Date().toISOString() : null}, updated_at = now() where id = ${b.id}`;
   if (REFUND.includes(b.refund_status))
     await sql`update leads set refund_status = ${b.refund_status}, updated_at = now() where id = ${b.id}`;
 

@@ -149,7 +149,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
   const [sess, visitors, steps, leadAgg, sections, devices, utmRows, daily, pending, students, activity] = data;
   const iso = (v: unknown) => (v ? new Date(v as string).toISOString() : null);
   const toRows = (rows: typeof pending) =>
-    rows.map((r) => ({ ...r, created_at: iso(r.created_at), updated_at: iso(r.updated_at), paid_at: iso(r.paid_at), reminder_sent_at: iso(r.reminder_sent_at) })) as LeadRow[];
+    rows.map((r) => ({ ...r, created_at: iso(r.created_at), updated_at: iso(r.updated_at), paid_at: iso(r.paid_at), reminder_sent_at: iso(r.reminder_sent_at), confirmation_sent_at: iso(r.confirmation_sent_at) })) as LeadRow[];
 
   const s = sess[0];
   const step = Object.fromEntries(steps.map((r) => [r.name, n(r.c)]));
@@ -377,8 +377,8 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
 
         <section className="panel">
           <h3>Enrolled students</h3>
-          <p className="sub">Mark class 1 attendance: refunds are only for students who attended class 1 and asked within 24 hours.</p>
-          <Students rows={toRows(students)} />
+          <p className="sub">Send each new student their details on WhatsApp, then mark class 1 attendance. Refunds are only for students who attended class 1 and asked within 24 hours.</p>
+          <Students rows={toRows(students)} batchStart={COURSE.batchStart} />
         </section>
       </div>
     </main>
