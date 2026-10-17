@@ -663,3 +663,51 @@ h2 { font-size: 26px; font-weight: 750; letter-spacing: -.03em; line-height: 1.1
 .tools li { display: inline-flex; align-items: center; gap: 8px; padding: 7px 13px 7px 9px; font-size: 13px; }
 .tools li img { width: 18px; height: 18px; flex: none; }
 @media (min-width: 768px) { .tools ul { gap: 10px; } .tools li { font-size: 14px; padding: 9px 16px 9px 11px; } .tools li img { width: 20px; height: 20px; } }
+
+/* ===== Landing polish v3 ===== */
+/* One typeface for labels: drop the monospace look (logo keeps its own font) */
+.mono, .kicker, .eyebrow, .week-n, .case-tag, .case-h, .proof-tag, .session-t .mono, .batch-line .mono, .case-ba span {
+  font-family: Inter, system-ui, sans-serif; font-weight: 700; letter-spacing: .1em;
+}
+.kicker { font-size: 11.5px; }
+.eyebrow { font-size: 11px; letter-spacing: .08em; }
+.quote .mono { font-size: 11px; letter-spacing: .12em; color: #8ea2ff; }
+.tools > .mono, .outcomes .mono, .price-card > .mono { font-size: 11px; letter-spacing: .12em; }
+.batch-line .mono { font-size: 9.5px; padding: 3px 7px; border-radius: 6px; }
+.session-t .mono { font-size: 10px; color: var(--blue); background: var(--blue-50); padding: 2px 6px; border-radius: 5px; letter-spacing: .08em; }
+
+/* Mentor header: photo above the heading on mobile so the name never breaks awkwardly */
+.mentor-head { flex-direction: column; align-items: flex-start; gap: 14px; }
+.mentor-photo { width: 72px; height: 72px; }
+.mentor-head h2 { font-size: 28px; }
+.mentor-role { margin-top: 2px; }
+@media (min-width: 768px) {
+  .mentor-head { flex-direction: row; align-items: center; gap: 20px; }
+  .mentor-photo { width: 104px; height: 104px; }
+  .mentor-head h2 { font-size: 34px; }
+}
+
+/* Offer: simple ticks, airier list, softer secondary text */
+.offer h2 { margin-bottom: 20px; }
+.get { gap: 16px; }
+.get li { gap: 12px; }
+.get .ic { background: none; padding: 0; width: 18px; height: 18px; margin-top: 3px; stroke: #c9d2ff; }
+.get b { font-size: 15.5px; }
+.get span { font-size: 13.5px; color: rgba(255,255,255,.72); }
+.price-card { box-shadow: 0 40px 80px -40px rgba(0,0,0,.55); }
+.price { font-size: 48px; }
+
+/* Case study: calmer labels */
+.case h3 { font-size: 20px; letter-spacing: -.02em; }
+.case-tag { font-size: 11px; }
+.case-h { font-size: 10.5px; color: var(--muted); }
+.case-foot { font-style: normal !important; }
+
+/* Headings: keep line length comfortable */
+.sec h2 { max-width: 22ch; }
+.final h2 { max-width: none; }
+.offer h2 { max-width: 16ch; }
+
+/* Final CTA: more breathing room */
+.final { padding: 36px 22px; }
+.final .body { margin: 10px 0 20px; }

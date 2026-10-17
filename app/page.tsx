@@ -405,7 +405,9 @@ export default function Home() {
               <p className="case-foot">You&apos;ll see the full breakdown in class.</p>
             </article>
           </div>
-          <ProofStrip items={PROOF} />
+          <div className="wrap">
+            <ProofStrip items={PROOF} />
+          </div>
         </section>
 
         {/* 4. DIFFERENT */}
