@@ -742,3 +742,9 @@ h2 { font-size: 26px; font-weight: 750; letter-spacing: -.03em; line-height: 1.1
   .for-line { margin-top: 8px; font-size: 14px; }
   .chips { margin: 12px 0 16px; }
 }
+
+/* Compact hero: headline + one punchline + facts */
+.hero h1 { margin-bottom: 14px; }
+.lead-punch { margin-top: 0; font-size: 16px; line-height: 1.5; }
+@media (min-width: 768px) { .lead-punch { font-size: 18px; max-width: 560px; } }
+@media (max-width: 767px) { .lead-punch { font-size: 15.5px; } .chips { margin: 14px 0 18px; } }

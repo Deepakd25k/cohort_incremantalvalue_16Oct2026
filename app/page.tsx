@@ -237,20 +237,14 @@ export default function Home() {
                 Most marketers know the <span className="hl">Ads Manager</span>. Very few know how a D2C brand{" "}
                 <span className="hl">actually makes money</span>.
               </h1>
-              <p className="lead">
-                A 4-weekend <b>live</b> cohort that teaches you D2C the way founders see it: <b>unit economics, RTO, tracking, CRO, retention and AI</b>.
-              </p>
               <p className="lead-punch">
                 In 2027, AI clicks the buttons. <b>Founders hire people who understand the business.</b>
               </p>
-              <p className="for-line">
-                For <b>marketers, freelancers and early-stage founders</b> who already run Meta ads.
-              </p>
               <ul className="chips">
-                <li>Live on {COURSE.platform}</li>
-                <li>8 sessions · Sat &amp; Sun</li>
-                <li>Taught in {COURSE.language}</li>
-                <li>1 month WhatsApp support</li>
+                <li>4-weekend live cohort</li>
+                <li>Sat &amp; Sun · {COURSE.language}</li>
+                <li>For people who run Meta ads</li>
+                <li>Recordings + 1 month support</li>
               </ul>
               <div className="hero-cta">
                 <CTA source="hero">Reserve my seat · {price}</CTA>
