@@ -196,6 +196,9 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
             <a className="btn btn-sm" href="/api/admin/export?status=paid">
               Students CSV
             </a>
+            <Link className="btn btn-sm" href="/admin/setup">
+              Setup check
+            </Link>
             <ResetButton />
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db, hasDb } from "@/lib/db";
+import { db, hasDb, mark } from "@/lib/db";
 import { sendToOwner } from "@/lib/aisensy";
 import { COURSE } from "@/lib/config";
 
@@ -12,6 +12,7 @@ export async function GET(req: Request) {
   const auth = req.headers.get("authorization");
   if (!secret || (auth !== `Bearer ${secret}` && key !== secret))
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  await mark("cron_summary_last", new Date().toISOString());
   if (!hasDb()) return NextResponse.json({ sent: false });
 
   const sql = db();

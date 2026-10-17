@@ -447,3 +447,16 @@ h2 { font-size: 27px; font-weight: 800; margin-bottom: 14px; }
   .mentor-head { gap: 20px; }
   .mentor-photo { width: 120px; height: 120px; }
 }
+
+/* Setup check */
+.setup-group { margin-top: 14px; }
+.setup-g { color: var(--muted); margin-bottom: 6px; }
+.setup-row { display: grid; grid-template-columns: 24px minmax(150px, 230px) 1fr; gap: 8px; align-items: start; padding: 9px 10px; border-radius: 8px; font-size: 13px; }
+.setup-row + .setup-row { margin-top: 4px; }
+.setup-row b { font-family: var(--mono); font-size: 12px; word-break: break-all; }
+.setup-d { color: var(--ink-2); }
+.setup-ok { background: #f1fbf6; }
+.setup-warn { background: #fff8e8; }
+.setup-fail { background: #fdecef; }
+.setup-skip { background: #f5f7fb; }
+@media (max-width: 640px) { .setup-row { grid-template-columns: 24px 1fr; } .setup-d { grid-column: 2; } }

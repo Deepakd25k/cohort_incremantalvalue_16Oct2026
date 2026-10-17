@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { db, mark } from "@/lib/db";
 import { verifyWebhookSignature } from "@/lib/razorpay";
 import { markPaid } from "@/lib/payments";
 
@@ -6,9 +6,13 @@ import { markPaid } from "@/lib/payments";
 export async function POST(req: Request) {
   const raw = await req.text();
   const sig = req.headers.get("x-razorpay-signature") || "";
-  if (!verifyWebhookSignature(raw, sig)) return new Response("bad signature", { status: 400 });
+  if (!verifyWebhookSignature(raw, sig)) {
+    await mark("razorpay_webhook_bad_signature", new Date().toISOString());
+    return new Response("bad signature", { status: 400 });
+  }
 
   const evt = JSON.parse(raw);
+  await mark("razorpay_webhook_last", String(evt?.event || "unknown"));
   const p = evt?.payload?.payment?.entity;
   if (!p?.order_id) return new Response("ok");
 

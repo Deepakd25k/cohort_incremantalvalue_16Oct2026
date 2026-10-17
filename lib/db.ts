@@ -38,6 +38,7 @@ const SCHEMA = [
   `alter table leads add column if not exists followed_up_at timestamptz`,
   `alter table leads add column if not exists attended_class1 boolean not null default false`,
   `alter table leads add column if not exists refund_status text not null default 'none'`,
+  `create table if not exists kv (k text primary key, v text, updated_at timestamptz not null default now())`,
 ];
 
 function raw() {
@@ -69,3 +70,14 @@ export function db() {
 }
 
 export const hasDb = () => Boolean(process.env.DATABASE_URL);
+
+// Small "last seen" log used by /admin/setup (webhooks, cron runs). Never throws.
+export async function mark(k: string, v: string) {
+  if (!hasDb()) return;
+  try {
+    await db()`insert into kv (k, v) values (${k}, ${v.slice(0, 300)})
+               on conflict (k) do update set v = excluded.v, updated_at = now()`;
+  } catch (err) {
+    console.error("kv mark failed", err);
+  }
+}
