@@ -7,6 +7,8 @@ import { Faq, SeatCounter, StickyBar } from "@/components/Bits";
 import { PageTracker } from "@/components/PageTracker";
 import { Logo } from "@/components/Logo";
 import { ProofStrip, type Proof } from "@/components/ProofStrip";
+import { Testimonials } from "@/components/Testimonials";
+import { TESTIMONIALS } from "@/lib/testimonials";
 
 const price = `₹${COURSE.price.toLocaleString("en-IN")}`;
 const hasPhoto = fs.existsSync(path.join(process.cwd(), "public", COURSE.photo));
@@ -28,7 +30,7 @@ const LOOK = [
 
 const COMPARE = [
   ["₹50,000 – ₹60,000", price + ", all inclusive"],
-  ["Recorded videos", "100% live, doubts solved in class"],
+  ["Recorded videos only", "Live classes + recordings, doubts solved in class"],
   ["How to click buttons in Ads Manager", "How a D2C brand actually makes money"],
   ["Dummy examples", "Real brand screenshots & sheets"],
   ["Taught by course creators", "Taught by someone running ads right now"],
@@ -127,13 +129,14 @@ const TOOLS = [
 const FOR = [
   ["You run Meta ads but want to understand the whole business", "You have never opened Ads Manager"],
   ["Freelancers who get stuck when a client asks “why?”", "You want a certificate more than the skill"],
-  ["Freshers & juniors preparing for D2C roles", "You want recordings to watch “later”"],
+  ["Freshers & juniors preparing for D2C roles", "You only want to watch videos, not do the work"],
   ["Early-stage founders who want to know what their team should do", "You are looking for secret hacks"],
 ];
 
 const GET = [
   ["8 live sessions", "Every Sat & Sun for 4 weekends, 3 hours each on Google Meet"],
   ["30 min live doubts", "After every class. Bring your own account’s problems"],
+  ["Recordings + class notes", "Every session recorded, with notes. Rewatch till " + COURSE.supportUntil],
   ["Real brand teardowns", "Screenshots and numbers from brands I run"],
   ["Ready-to-use sheets", "Unit economics calculator, RTO checklist, founder report, tracking checklist"],
   ["n8n AI workflows", "Automations for creatives and ad copies"],
@@ -145,15 +148,20 @@ const FAQS = [
   { q: "What language is the class in?", a: <p>Hinglish. All slides and sheets are in English.</p> },
   {
     q: "Will I get recordings?",
-    a: <p>No. This is a live-only cohort. No recordings means everyone shows up, asks questions, and actually learns.</p>,
+    a: (
+      <p>
+        Yes. Every class is recorded and shared in the batch group along with class notes. You can rewatch them till {COURSE.supportUntil}. Doubts are
+        solved live, so try to attend.
+      </p>
+    ),
   },
   { q: "I am a beginner. Can I join?", a: <p>You need to know the basics of Meta Ads Manager. If you have never run an ad, this is not the right course yet.</p> },
   {
     q: "What if I miss a class?",
     a: (
       <p>
-        The sheets and templates from every class are shared in the batch WhatsApp group. Ask about anything you missed in the next doubt slot or on
-        WhatsApp. Recordings are not shared.
+        Watch the recording and go through the class notes, both shared in the batch WhatsApp group. Ask about anything you did not get in the next
+        doubt slot or on WhatsApp.
       </p>
     ),
   },
@@ -407,6 +415,7 @@ export default function Home() {
           </div>
           <div className="wrap">
             <ProofStrip items={PROOF} />
+            <Testimonials items={TESTIMONIALS} />
           </div>
         </section>
 

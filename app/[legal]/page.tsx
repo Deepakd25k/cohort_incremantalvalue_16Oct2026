@@ -19,13 +19,14 @@ const PAGES: Record<string, { title: string; body: ReactNode }> = {
         <h2>The cohort</h2>
         <p>
           The cohort is a live online program held on {COURSE.platform} ({COURSE.schedule}) from {COURSE.batchStart} to {COURSE.batchEnd}, followed by
-          WhatsApp support till {COURSE.supportUntil}. Sessions are live only and are not recorded or shared.
+          WhatsApp support till {COURSE.supportUntil}. Sessions are recorded, and recordings and class notes are shared with enrolled students for
+          personal use until {COURSE.supportUntil}.
         </p>
         <h2>Fee</h2>
         <p>The fee is {price}, paid in full before the cohort starts. Payments are processed by Razorpay.</p>
         <h2>Your access</h2>
         <p>
-          Your seat is for you alone. Do not share class links, sheets or material with others, and do not record sessions. We may remove anyone who
+          Your seat is for you alone. Do not share class links, recordings, sheets or material with others, and do not download or re-upload recordings. We may remove anyone who
           does, without a refund.
         </p>
         <h2>Schedule changes</h2>
