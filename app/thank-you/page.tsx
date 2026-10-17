@@ -1,15 +1,29 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { COURSE } from "@/lib/config";
+import { headers } from "next/headers";
 import { db, hasDb } from "@/lib/db";
+import { verifyPaymentSignature } from "@/lib/razorpay";
+import { markPaid } from "@/lib/payments";
 import { Logo } from "@/components/Logo";
 import { PurchasePixel } from "./PurchasePixel";
 
 export const metadata: Metadata = { title: "You're in · incrementalvalue", robots: { index: false } };
 export const dynamic = "force-dynamic";
 
-export default async function ThankYou({ searchParams }: { searchParams: Promise<{ l?: string }> }) {
-  const { l } = await searchParams;
+type Params = { l?: string; o?: string; p?: string; s?: string };
+
+export default async function ThankYou({ searchParams }: { searchParams: Promise<Params> }) {
+  const { l, o, p, s } = await searchParams;
+  // Razorpay sends the buyer here straight from checkout; the payment is verified on this request.
+  if (o && p && s && hasDb() && verifyPaymentSignature(o, p, s)) {
+    try {
+      const h = await headers();
+      await markPaid(o, p, { ip: h.get("x-forwarded-for")?.split(",")[0]?.trim(), ua: h.get("user-agent") });
+    } catch (err) {
+      console.error("thank-you verify failed", err);
+    }
+  }
   let lead: { id: string; name: string; status: string } | undefined;
   if (l && hasDb()) {
     try {

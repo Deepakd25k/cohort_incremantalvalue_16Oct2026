@@ -748,3 +748,14 @@ h2 { font-size: 26px; font-weight: 750; letter-spacing: -.03em; line-height: 1.1
 .lead-punch { margin-top: 0; font-size: 16px; line-height: 1.5; }
 @media (min-width: 768px) { .lead-punch { font-size: 18px; max-width: 560px; } }
 @media (max-width: 767px) { .lead-punch { font-size: 15.5px; } .chips { margin: 14px 0 18px; } }
+
+/* Enroll form: centred card on every screen */
+.modal-backdrop { align-items: center; padding: 16px; }
+.modal { border-radius: 20px; padding: 24px 18px 18px; max-height: calc(100dvh - 32px); animation: pop .18s ease-out; }
+@keyframes pop { from { transform: scale(.96); opacity: 0; } }
+@media (min-width: 768px) { .modal { padding: 28px; } }
+
+/* After payment: shown while the thank-you page loads */
+.pay-redirect { background: rgba(11,16,32,.88); z-index: 70; flex-direction: column; gap: 14px; color: #fff; font-weight: 600; font-size: 15px; text-align: center; }
+.spinner { width: 36px; height: 36px; border-radius: 50%; border: 3px solid rgba(255,255,255,.3); border-top-color: #fff; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }

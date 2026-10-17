@@ -24,6 +24,7 @@ export function EnrollProvider({ children }: { children: ReactNode }) {
   const [isOpen, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [redirecting, setRedirecting] = useState(false);
   const source = useRef("unknown");
   const dialog = useRef<HTMLDivElement>(null);
 
@@ -106,14 +107,17 @@ export function EnrollProvider({ children }: { children: ReactNode }) {
         prefill: data.prefill,
         notes: { lead_id: data.leadId },
         theme: { color: "#3155F5" },
-        handler: async (r: Record<string, string>) => {
-          const v = await fetch("/api/payment/verify", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(r),
-          }).then((x) => x.json()).catch(() => ({}));
-          track("payment_success", { verified: Boolean(v.ok) });
-          location.href = `/thank-you?l=${encodeURIComponent(data.leadId)}`;
+        // Go to the thank-you page at once; it verifies the payment on the server.
+        handler: (r: Record<string, string>) => {
+          setRedirecting(true);
+          track("payment_success");
+          const q = new URLSearchParams({
+            l: data.leadId,
+            o: r.razorpay_order_id,
+            p: r.razorpay_payment_id,
+            s: r.razorpay_signature,
+          });
+          location.href = `/thank-you?${q}`;
         },
         modal: {
           ondismiss: () => {
@@ -137,6 +141,12 @@ export function EnrollProvider({ children }: { children: ReactNode }) {
   return (
     <EnrollCtx.Provider value={{ open }}>
       {children}
+      {redirecting && (
+        <div className="modal-backdrop pay-redirect" role="status">
+          <div className="spinner" />
+          <p>Payment successful. Opening your confirmation…</p>
+        </div>
+      )}
       {isOpen && (
         <div className="modal-backdrop" onClick={() => !busy && setOpen(false)}>
           <div

@@ -1,3 +1,4 @@
+import { after } from "next/server";
 import { db } from "./db";
 import { sendCapi } from "./meta";
 import { sendToOwner, sendWhatsApp } from "./aisensy";
@@ -30,6 +31,14 @@ export async function markPaid(orderId: string, paymentId: string, ctx?: { ip?: 
 
   const lead = rows[0];
   if (!lead) return null; // already paid or unknown order
+
+  // Everything below runs after the response is sent, so the buyer lands on the thank-you page instantly.
+  after(() => notifyPaid(lead, ctx));
+  return lead;
+}
+
+async function notifyPaid(lead: Lead, ctx?: { ip?: string | null; ua?: string | null }) {
+  const sql = db();
 
   // Wakes the live /admin dashboard immediately.
   if (lead.visitor_id && lead.session_id)
@@ -73,6 +82,4 @@ export async function markPaid(orderId: string, paymentId: string, ctx?: { ip?: 
     `${t.n}/${COURSE.seats}`,
     "₹" + Math.round(Number(t.rev) / 100).toLocaleString("en-IN"),
   ]);
-
-  return lead;
 }
