@@ -35,7 +35,7 @@ export function Testimonials({ items }: { items: Testimonial[] }) {
 
   return (
     <div className="testimonials" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onTouchStart={() => setPaused(true)}>
-      <p className="kicker">What people say</p>
+      <p className="kicker">From people I&apos;ve mentored</p>
       <div className="t-track" ref={trackRef}>
         {items.map((t) => (
           <figure className="t-card" key={t.name}>
