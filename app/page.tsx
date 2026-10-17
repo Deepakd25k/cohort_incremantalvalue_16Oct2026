@@ -239,7 +239,9 @@ export default function Home() {
               </h1>
               <p className="lead">
                 A 4-weekend <b>live</b> cohort that teaches you D2C the way founders see it: <b>unit economics, RTO, tracking, CRO, retention and AI</b>.
-                Not just which button to click.
+              </p>
+              <p className="lead-punch">
+                In 2027, AI clicks the buttons. <b>Founders hire people who understand the business.</b>
               </p>
               <p className="for-line">
                 For <b>marketers, freelancers and early-stage founders</b> who already run Meta ads.

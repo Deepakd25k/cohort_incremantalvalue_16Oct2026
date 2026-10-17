@@ -727,3 +727,18 @@ h2 { font-size: 26px; font-weight: 750; letter-spacing: -.03em; line-height: 1.1
 .t-who small { font-size: 12.5px; color: var(--muted); }
 .t-li { font-size: 12px; font-weight: 600; color: var(--blue); text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; }
 @media (min-width: 768px) { .t-card { flex-basis: 360px; padding: 24px; } }
+
+/* Hero punchline: the "why now" in one quiet, scannable line */
+.lead-punch { margin-top: 12px; padding-left: 12px; border-left: 2px solid var(--blue); font-size: 15px; line-height: 1.45; color: var(--muted); }
+.lead-punch b { color: var(--ink); font-weight: 650; }
+.for-line { margin-top: 10px; }
+@media (min-width: 768px) { .lead-punch { font-size: 16.5px; margin-top: 16px; } }
+/* Mobile hero: keep the CTA inside the first screen */
+@media (max-width: 767px) {
+  .hero { padding-top: 18px; }
+  h1 { margin: 12px 0 10px; font-size: 31px; }
+  .lead { font-size: 16px; line-height: 1.55; }
+  .lead-punch { margin-top: 10px; font-size: 14.5px; }
+  .for-line { margin-top: 8px; font-size: 14px; }
+  .chips { margin: 12px 0 16px; }
+}
