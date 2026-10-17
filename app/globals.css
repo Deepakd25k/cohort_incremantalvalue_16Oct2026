@@ -460,3 +460,16 @@ h2 { font-size: 27px; font-weight: 800; margin-bottom: 14px; }
 .setup-fail { background: #fdecef; }
 .setup-skip { background: #f5f7fb; }
 @media (max-width: 640px) { .setup-row { grid-template-columns: 24px 1fr; } .setup-d { grid-column: 2; } }
+
+/* Hero audience line + outcomes */
+.for-line { margin-top: 10px; font-size: 15px; color: var(--ink-2); }
+.outcomes { margin: 18px 0 4px; border: 1px solid var(--blue-100); background: var(--tint); border-radius: var(--r); padding: 14px; }
+.outcomes .mono { color: var(--blue); margin-bottom: 10px; }
+.outcomes ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+.outcomes li { display: flex; gap: 7px; align-items: flex-start; font-size: 13px; font-weight: 600; line-height: 1.4; color: var(--ink); }
+@media (min-width: 768px) {
+  .outcomes { padding: 18px 20px; }
+  .outcomes ul { grid-template-columns: repeat(3, 1fr); gap: 12px 18px; }
+  .outcomes li { font-size: 14px; }
+}
+.sec-line { border-top: 1px solid var(--line); }

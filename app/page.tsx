@@ -100,6 +100,15 @@ const PROOF: Proof[] = [
   { src: "/proof/lifetime-top4.webp", w: 1400, h: 554, stat: "₹47L spent · 16,084 purchases", label: "All-time, top 4 campaigns · 5.25X ROAS" },
 ];
 
+const OUTCOMES = [
+  "Build a unit economics sheet for any D2C brand",
+  "Explain why a brand at 4X ROAS is still losing money",
+  "Find where the funnel leaks, from ad click to delivery",
+  "Set up GA4, GTM, Pixel and CAPI, and trust your numbers",
+  "Cut RTO and push prepaid orders",
+  "Report to a founder in numbers they care about",
+];
+
 const TOOLS = ["Meta Ads", "Google Ads", "Shopify", "GA4", "GTM", "Pixel + CAPI", "Bitespeed", "Shiprocket", "Amazon", "Blinkit", "n8n"];
 
 const FOR = [
@@ -126,6 +135,32 @@ const FAQS = [
     a: <p>No. This is a live-only cohort. No recordings means everyone shows up, asks questions, and actually learns.</p>,
   },
   { q: "I am a beginner. Can I join?", a: <p>You need to know the basics of Meta Ads Manager. If you have never run an ad, this is not the right course yet.</p> },
+  {
+    q: "What if I miss a class?",
+    a: (
+      <p>
+        The sheets and templates from every class are shared in the batch WhatsApp group. Ask about anything you missed in the next doubt slot or on
+        WhatsApp. Recordings are not shared.
+      </p>
+    ),
+  },
+  {
+    q: "There are 50 people. Will my doubts get answered?",
+    a: <p>Yes. Every class ends with 30 minutes of live doubts, and the WhatsApp group stays open for a month after the course. That is why seats are capped at 50.</p>,
+  },
+  {
+    q: "Isn't all this free on YouTube?",
+    a: (
+      <p>
+        YouTube teaches one tool per video. This cohort connects them: how ads, website, delivery and margins affect each other, using real brand numbers,
+        with someone answering questions about your own account.
+      </p>
+    ),
+  },
+  {
+    q: "My brand sells mostly on Amazon or Blinkit. Is this useful?",
+    a: <p>Yes. Unit economics, RTO, tracking and growth thinking apply to every channel, and Weekend 2 covers where Amazon and Blinkit fit in the plan.</p>,
+  },
   {
     q: "What is the refund policy?",
     a: (
@@ -184,6 +219,9 @@ export default function Home() {
               <p className="lead">
                 A 4-weekend <b>live</b> cohort that teaches you D2C the way founders see it: <b>unit economics, RTO, tracking, CRO, retention and AI</b>.
                 Not just which button to click.
+              </p>
+              <p className="for-line">
+                For <b>marketers, freelancers and early-stage founders</b> who already run Meta ads.
               </p>
               <ul className="chips">
                 <li>Live on {COURSE.platform}</li>
@@ -276,114 +314,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 3. DIFFERENT */}
-        <section className="sec sec-tint grid-bg" data-section="different">
-          <div className="wrap narrow">
-            <p className="kicker">Why this is different</p>
-            <h2>
-              Not another <span className="hl">“Meta Ads course”</span>
-            </h2>
-            <div className="cmp cmp-vs" role="table" aria-label="Typical course vs this cohort">
-              <div className="cmp-row cmp-head" role="row">
-                <div role="columnheader">Typical ₹50k course</div>
-                <div role="columnheader" className="cmp-head-us h-yes">
-                  <Logo light /> cohort
-                </div>
-              </div>
-              {COMPARE.map(([a, b]) => (
-                <div className="cmp-row" role="row" key={a}>
-                  <div role="cell" className="cmp-no">
-                    <Cross />
-                    {a}
-                  </div>
-                  <div role="cell" className="cmp-yes">
-                    <Check />
-                    {b}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* 4. CURRICULUM */}
-        <section className="sec" data-section="curriculum">
-          <div className="wrap">
-            <div className="narrow">
-              <p className="kicker">Curriculum</p>
-              <h2>
-                4 weekends. 8 live sessions. <span className="hl">The full D2C picture.</span>
-              </h2>
-              <p className="body">
-                {COURSE.schedule} · {COURSE.batchStart} to {COURSE.batchEnd}. Each class is 3 hours + 30 minutes of doubts.
-              </p>
-            </div>
-            <div className="weeks">
-              {WEEKS.map((w, i) => (
-                <details className="week" key={w.t} open={i === 0}>
-                  <summary>
-                    <span className="mono week-n">WEEKEND {i + 1}</span>
-                    <span className="week-t">{w.t}</span>
-                  </summary>
-                  <div className="week-body">
-                    {w.sessions.map((s, j) => (
-                      <div className="session" key={s.t}>
-                        <p className="session-t">
-                          <span className="mono">{j === 0 ? "SAT" : "SUN"}</span> {s.t}
-                        </p>
-                        <ul>
-                          {s.b.map((x) => (
-                            <li key={x}>{x}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
-                </details>
-              ))}
-            </div>
-            <div className="tools">
-              <span className="mono">TOOLS YOU&apos;LL WORK WITH</span>
-              <ul>
-                {TOOLS.map((t) => (
-                  <li key={t}>{t}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        {/* 5. WHO IT'S FOR */}
-        <section className="sec sec-tint" data-section="for">
-          <div className="wrap narrow">
-            <p className="kicker">Who it&apos;s for</p>
-            <h2>
-              Is this <span className="hl">right for you?</span>
-            </h2>
-            <div className="cmp" role="table" aria-label="Who this is for and not for">
-              <div className="cmp-row cmp-head" role="row">
-                <div role="columnheader" className="h-yes">Join if…</div>
-                <div role="columnheader">Skip if…</div>
-              </div>
-              {FOR.map(([a, b]) => (
-                <div className="cmp-row" role="row" key={a}>
-                  <div role="cell" className="cmp-yes">
-                    <Check />
-                    {a}
-                  </div>
-                  <div role="cell" className="cmp-no">
-                    <Cross />
-                    {b}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <p className="body small">Only requirement: you know the basics of Meta Ads Manager.</p>
-          </div>
-        </section>
-
-        {/* 6. ABOUT + CASE */}
-        <section className="sec" data-section="about">
+        {/* 3. ABOUT + PROOF */}
+        <section className="sec sec-line" data-section="about">
           <div className="wrap about-grid">
             <div>
               <div className="mentor-head">
@@ -461,6 +393,123 @@ export default function Home() {
             </article>
           </div>
           <ProofStrip items={PROOF} />
+        </section>
+
+        {/* 4. DIFFERENT */}
+        <section className="sec sec-tint grid-bg" data-section="different">
+          <div className="wrap narrow">
+            <p className="kicker">Why this is different</p>
+            <h2>
+              Not another <span className="hl">“Meta Ads course”</span>
+            </h2>
+            <div className="cmp cmp-vs" role="table" aria-label="Typical course vs this cohort">
+              <div className="cmp-row cmp-head" role="row">
+                <div role="columnheader">Typical ₹50k course</div>
+                <div role="columnheader" className="cmp-head-us h-yes">
+                  <Logo light /> cohort
+                </div>
+              </div>
+              {COMPARE.map(([a, b]) => (
+                <div className="cmp-row" role="row" key={a}>
+                  <div role="cell" className="cmp-no">
+                    <Cross />
+                    {a}
+                  </div>
+                  <div role="cell" className="cmp-yes">
+                    <Check />
+                    {b}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* 5. CURRICULUM */}
+        <section className="sec" data-section="curriculum">
+          <div className="wrap">
+            <div className="narrow">
+              <p className="kicker">Curriculum</p>
+              <h2>
+                4 weekends. 8 live sessions. <span className="hl">The full D2C picture.</span>
+              </h2>
+              <p className="body">
+                {COURSE.schedule} · {COURSE.batchStart} to {COURSE.batchEnd}. Each class is 3 hours + 30 minutes of doubts.
+              </p>
+            </div>
+            <div className="outcomes">
+              <p className="mono">AFTER 4 WEEKENDS, YOU WILL BE ABLE TO</p>
+              <ul>
+                {OUTCOMES.map((o) => (
+                  <li key={o}>
+                    <Check />
+                    {o}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="weeks">
+              {WEEKS.map((w, i) => (
+                <details className="week" key={w.t} open={i === 0}>
+                  <summary>
+                    <span className="mono week-n">WEEKEND {i + 1}</span>
+                    <span className="week-t">{w.t}</span>
+                  </summary>
+                  <div className="week-body">
+                    {w.sessions.map((s, j) => (
+                      <div className="session" key={s.t}>
+                        <p className="session-t">
+                          <span className="mono">{j === 0 ? "SAT" : "SUN"}</span> {s.t}
+                        </p>
+                        <ul>
+                          {s.b.map((x) => (
+                            <li key={x}>{x}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </details>
+              ))}
+            </div>
+            <div className="tools">
+              <span className="mono">TOOLS YOU&apos;LL WORK WITH</span>
+              <ul>
+                {TOOLS.map((t) => (
+                  <li key={t}>{t}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* 6. WHO IT'S FOR */}
+        <section className="sec sec-tint" data-section="for">
+          <div className="wrap narrow">
+            <p className="kicker">Who it&apos;s for</p>
+            <h2>
+              Is this <span className="hl">right for you?</span>
+            </h2>
+            <div className="cmp" role="table" aria-label="Who this is for and not for">
+              <div className="cmp-row cmp-head" role="row">
+                <div role="columnheader" className="h-yes">Join if…</div>
+                <div role="columnheader">Skip if…</div>
+              </div>
+              {FOR.map(([a, b]) => (
+                <div className="cmp-row" role="row" key={a}>
+                  <div role="cell" className="cmp-yes">
+                    <Check />
+                    {a}
+                  </div>
+                  <div role="cell" className="cmp-no">
+                    <Cross />
+                    {b}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="body small">Only requirement: you know the basics of Meta Ads Manager.</p>
+          </div>
         </section>
 
         {/* 7. OFFER */}

@@ -33,7 +33,7 @@ const rupees = (paise: number) => "₹" + fmt(Math.round(paise / 100));
 const time = (t: string) =>
   new Date(t).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
 
-const SECTION_ORDER = ["hero", "problem", "different", "curriculum", "for", "about", "offer", "faq"];
+const SECTION_ORDER = ["hero", "problem", "about", "different", "curriculum", "for", "offer", "faq"];
 
 function Login({ error }: { error: boolean }) {
   return (
