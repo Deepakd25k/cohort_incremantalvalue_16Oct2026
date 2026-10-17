@@ -8,9 +8,9 @@ export const COURSE = {
   anchorPrice: 50000, // what typical courses charge, used only for comparison copy
   seats: 50,
   showSeatCounterAfter: 25, // live "seats left" appears once this many seats are sold
-  batchStart: "Sat, 5 Dec 2026",
-  batchEnd: "Sun, 27 Dec 2026",
-  supportUntil: "27 Jan 2027",
+  batchStart: "Sat, 28 Nov 2026",
+  batchEnd: "Sun, 20 Dec 2026",
+  supportUntil: "20 Jan 2027",
   schedule: "Sat & Sun, 11:00 AM – 2:30 PM",
   platform: "Google Meet",
   language: "Hinglish",
