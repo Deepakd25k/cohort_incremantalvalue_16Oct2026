@@ -12,6 +12,7 @@ function detail(e: LiveEvent) {
   const p = e.props || {};
   if (e.name === "scroll") return `${p.depth}%`;
   if (e.name === "section_view") return String(p.id ?? "");
+  if (e.name === "lead_submit") return `lead ${p.lead}${p.test ? " · test" : ""}${p.repeat ? " · repeat" : ""}`;
   return Object.values(p).join(", ").slice(0, 40);
 }
 

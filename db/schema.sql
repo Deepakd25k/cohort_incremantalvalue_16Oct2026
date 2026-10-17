@@ -57,3 +57,4 @@ alter table leads add column if not exists followup_note text;
 alter table leads add column if not exists followed_up_at timestamptz;
 alter table leads add column if not exists attended_class1 boolean not null default false;
 alter table leads add column if not exists refund_status text not null default 'none';
+alter table leads add column if not exists submit_count integer not null default 1;

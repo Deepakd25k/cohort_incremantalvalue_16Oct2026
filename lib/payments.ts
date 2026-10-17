@@ -29,7 +29,7 @@ export async function markPaid(orderId: string, paymentId: string, ctx?: { ip?: 
   const lead = rows[0];
   if (!lead) return null; // already paid or unknown order
 
-  if (!lead.is_test)
+  if (!lead.is_test || process.env.META_TEST_EVENT_CODE)
     await sendCapi({
       eventName: "Purchase",
       eventId: `purchase_${lead.id}`,

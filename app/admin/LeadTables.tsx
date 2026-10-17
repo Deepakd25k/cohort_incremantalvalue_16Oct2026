@@ -5,6 +5,8 @@ import { useState } from "react";
 export type LeadRow = {
   id: string;
   created_at: string;
+  updated_at: string | null;
+  submit_count: number;
   paid_at: string | null;
   name: string;
   phone: string;
@@ -77,7 +79,7 @@ export function FollowUps({ rows, siteUrl, batchStart }: { rows: LeadRow[]; site
       <table className="tbl tbl-edit">
         <thead>
           <tr>
-            <th>Filled form</th>
+            <th>Last submit</th>
             <th>Name</th>
             <th>Profile</th>
             <th>Source</th>
@@ -91,7 +93,10 @@ export function FollowUps({ rows, siteUrl, batchStart }: { rows: LeadRow[]; site
         <tbody>
           {data.map((l) => (
             <tr key={l.id} className={l.wa_opt_out ? "row-muted" : ""}>
-              <td title={fmtTime(l.created_at)}>{ago(l.created_at)}</td>
+              <td title={`First: ${fmtTime(l.created_at)}`}>
+                {ago(l.updated_at || l.created_at)}
+                {l.submit_count > 1 && <div className="cell-sub">submitted {l.submit_count}×</div>}
+              </td>
               <td>
                 {l.name} {l.is_test && <span className="tag tag-lead">test</span>}
                 <div className="cell-sub">+{l.phone}</div>

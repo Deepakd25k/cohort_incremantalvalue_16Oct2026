@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { db, hasDb } from "@/lib/db";
 import { createOrder } from "@/lib/razorpay";
 import { sendCapi } from "@/lib/meta";
@@ -35,27 +35,54 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "You are already enrolled. Check WhatsApp for details." }, { status: 409 });
 
   const isTest = b.test === true;
+  const repeat = Boolean(existing[0]);
   const id = existing[0]?.id || crypto.randomUUID();
   const amount = COURSE.price * 100;
-  const order = await createOrder(amount, id.slice(0, 40), { lead_id: id, phone, name });
+  const visitorId = clip(b.visitorId, 64);
+  const sessionId = clip(b.sessionId, 64);
 
+  // 1. Save the lead first, so it is never lost even if Razorpay fails.
   await sql`
-    insert into leads (id, name, phone, email, profile, status, amount, razorpay_order_id, visitor_id, session_id,
+    insert into leads (id, name, phone, email, profile, status, amount, visitor_id, session_id,
                        fbp, fbc, utm_source, utm_medium, utm_campaign, utm_content, utm_term, is_test)
-    values (${id}, ${name}, ${phone}, ${email}, ${profile}, 'checkout', ${amount}, ${order.id},
-            ${clip(b.visitorId, 64)}, ${clip(b.sessionId, 64)}, ${clip(b.fbp)}, ${clip(b.fbc)},
+    values (${id}, ${name}, ${phone}, ${email}, ${profile}, 'lead', ${amount}, ${visitorId}, ${sessionId},
+            ${clip(b.fbp)}, ${clip(b.fbc)},
             ${clip(u.utm_source)}, ${clip(u.utm_medium)}, ${clip(u.utm_campaign)}, ${clip(u.utm_content)}, ${clip(u.utm_term)}, ${isTest})
     on conflict (id) do update set
-      name = excluded.name, email = excluded.email, profile = excluded.profile, status = 'checkout',
-      razorpay_order_id = excluded.razorpay_order_id, updated_at = now(), is_test = excluded.is_test,
+      name = excluded.name, email = excluded.email, profile = excluded.profile,
+      status = case when leads.status = 'paid' then 'paid' else 'lead' end,
+      updated_at = now(), is_test = excluded.is_test, submit_count = leads.submit_count + 1,
       fbp = coalesce(excluded.fbp, leads.fbp), fbc = coalesce(excluded.fbc, leads.fbc)`;
 
+  // Shows up instantly in /admin Live activity (also for your own test browser).
+  if (visitorId && sessionId)
+    await sql`insert into events (visitor_id, session_id, name, props, path, utm_source, utm_medium, utm_campaign, utm_content, utm_term)
+              values (${visitorId}, ${sessionId}, 'lead_submit', ${JSON.stringify({ lead: id.slice(0, 8), test: isTest, repeat })}::jsonb, '/',
+                      ${clip(u.utm_source)}, ${clip(u.utm_medium)}, ${clip(u.utm_campaign)}, ${clip(u.utm_content)}, ${clip(u.utm_term)})`;
+
+  // 2. Meta CAPI: a fresh event_id per submission so Meta never drops a repeat as a duplicate.
+  //    Test leads are sent only while META_TEST_EVENT_CODE is set (they land in Test Events, not in ads data).
+  const submitId = crypto.randomUUID().slice(0, 12);
+  const eventIds = { lead: `lead_${id}_${submitId}`, checkout: `ic_${id}_${submitId}` };
   const ctx = { email, phone, name, fbp: b.fbp, fbc: b.fbc, ip: clientIp(req), ua: req.headers.get("user-agent"), externalId: id };
-  const eventIds = { lead: `lead_${id}`, checkout: `ic_${order.id}` };
-  if (!isTest) await Promise.all([
-    sendCapi({ ...ctx, eventName: "Lead", eventId: eventIds.lead }),
-    sendCapi({ ...ctx, eventName: "InitiateCheckout", eventId: eventIds.checkout, value: COURSE.price }),
-  ]);
+  const sendToMeta = !isTest || Boolean(process.env.META_TEST_EVENT_CODE);
+  if (sendToMeta)
+    after(() =>
+      Promise.all([
+        sendCapi({ ...ctx, eventName: "Lead", eventId: eventIds.lead }),
+        sendCapi({ ...ctx, eventName: "InitiateCheckout", eventId: eventIds.checkout, value: COURSE.price }),
+      ])
+    );
+
+  // 3. Razorpay order.
+  let order: { id: string };
+  try {
+    order = await createOrder(amount, id.slice(0, 40), { lead_id: id, phone, name });
+  } catch (err) {
+    console.error("Razorpay order failed", err);
+    return NextResponse.json({ error: "Payment could not start. Please try again in a minute." }, { status: 502 });
+  }
+  await sql`update leads set razorpay_order_id = ${order.id}, status = case when status = 'paid' then 'paid' else 'checkout' end where id = ${id}`;
 
   return NextResponse.json({
     leadId: id,

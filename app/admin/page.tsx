@@ -89,7 +89,8 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
                count(*) filter (where status <> 'paid' and created_at < now() - interval '30 minutes')::int abandoned,
                count(*) filter (where reminder_sent_at is not null)::int reminded,
                count(*) filter (where status = 'paid' and reminder_sent_at is not null)::int recovered,
-               coalesce(sum(amount) filter (where status = 'paid'), 0)::bigint revenue
+               coalesce(sum(amount) filter (where status = 'paid'), 0)::bigint revenue,
+               (select count(*)::int from leads where is_test and updated_at >= ${from}::timestamptz) test_leads
           from leads where created_at >= ${from}::timestamptz and not is_test`,
     sql`select props->>'id' id, count(distinct session_id)::int c from events
          where name = 'section_view' and ts >= ${from}::timestamptz group by 1`,
@@ -117,7 +118,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
       select to_char(coalesce(e.d, l.d), 'DD Mon') as day, coalesce(e.sessions, 0) sessions,
              coalesce(l.leads, 0) leads, coalesce(l.paid, 0) paid
         from e full outer join l on e.d = l.d order by coalesce(e.d, l.d) desc limit 60`,
-    sql`select * from leads where status <> 'paid' order by created_at desc limit 300`,
+    sql`select * from leads where status <> 'paid' order by updated_at desc limit 300`,
     sql`select * from leads where status = 'paid' order by paid_at`,
     sql`select id::text as id, ts, name, props, visitor_id, session_id, utm_source, device from events
           where ts > now() - interval '5 minutes' order by id desc limit 300`,
@@ -138,7 +139,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
   const [sess, visitors, steps, leadAgg, sections, devices, utmRows, daily, pending, students, activity] = data;
   const iso = (v: unknown) => (v ? new Date(v as string).toISOString() : null);
   const toRows = (rows: typeof pending) =>
-    rows.map((r) => ({ ...r, created_at: iso(r.created_at), paid_at: iso(r.paid_at), reminder_sent_at: iso(r.reminder_sent_at) })) as LeadRow[];
+    rows.map((r) => ({ ...r, created_at: iso(r.created_at), updated_at: iso(r.updated_at), paid_at: iso(r.paid_at), reminder_sent_at: iso(r.reminder_sent_at) })) as LeadRow[];
 
   const s = sess[0];
   const step = Object.fromEntries(steps.map((r) => [r.name, n(r.c)]));
@@ -160,7 +161,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
     { l: "Visitors", v: fmt(n(visitors[0].v)), s: `${fmt(sessions)} sessions` },
     { l: "Bounce rate", v: pct(n(s.bounced), sessions), s: `avg ${Math.round(n(s.avg_secs))}s on page` },
     { l: "Avg scroll", v: Math.round(n(s.avg_depth)) + "%", s: "of page" },
-    { l: "Leads", v: fmt(n(L.leads)), s: `${pct(n(L.leads), sessions)} of sessions` },
+    { l: "Leads", v: fmt(n(L.leads)), s: `${pct(n(L.leads), sessions)} of sessions` + (n(L.test_leads) ? ` · +${n(L.test_leads)} test` : "") },
     { l: "Enrolled", v: fmt(n(L.paid)), s: `${pct(n(L.paid), sessions)} conv. rate` },
     { l: "Revenue", v: rupees(n(L.revenue)), s: `${n(L.abandoned)} abandoned · ${n(L.recovered)} recovered` },
   ];
