@@ -109,7 +109,20 @@ const OUTCOMES = [
   "Report to a founder in numbers they care about",
 ];
 
-const TOOLS = ["Meta Ads", "Google Ads", "Shopify", "GA4", "GTM", "Pixel + CAPI", "Bitespeed", "Shiprocket", "Amazon", "Blinkit", "n8n"];
+// Logos live in public/logos. Replace any file with the official logo (same name) to update it.
+const TOOLS = [
+  { name: "Meta Ads", logo: "meta" },
+  { name: "Google Ads", logo: "google-ads" },
+  { name: "Shopify", logo: "shopify" },
+  { name: "GA4", logo: "ga4" },
+  { name: "GTM", logo: "gtm" },
+  { name: "Pixel + CAPI", logo: "meta" },
+  { name: "Bitespeed", logo: "bitespeed" },
+  { name: "Shiprocket", logo: "shiprocket" },
+  { name: "Amazon", logo: "amazon" },
+  { name: "Blinkit", logo: "blinkit" },
+  { name: "n8n", logo: "n8n" },
+];
 
 const FOR = [
   ["You run Meta ads but want to understand the whole business", "You have never opened Ads Manager"],
@@ -476,7 +489,11 @@ export default function Home() {
               <span className="mono">TOOLS YOU&apos;LL WORK WITH</span>
               <ul>
                 {TOOLS.map((t) => (
-                  <li key={t}>{t}</li>
+                  <li key={t.name}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={`/logos/${t.logo}.svg`} alt="" width={18} height={18} loading="lazy" />
+                    {t.name}
+                  </li>
                 ))}
               </ul>
             </div>

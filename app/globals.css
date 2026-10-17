@@ -658,3 +658,8 @@ h2 { font-size: 26px; font-weight: 750; letter-spacing: -.03em; line-height: 1.1
   .quote { padding: 30px 32px; }
 }
 @media (min-width: 1024px) { h1 { font-size: 54px; } }
+
+/* Tool chips with brand logos */
+.tools li { display: inline-flex; align-items: center; gap: 8px; padding: 7px 13px 7px 9px; font-size: 13px; }
+.tools li img { width: 18px; height: 18px; flex: none; }
+@media (min-width: 768px) { .tools ul { gap: 10px; } .tools li { font-size: 14px; padding: 9px 16px 9px 11px; } .tools li img { width: 20px; height: 20px; } }
