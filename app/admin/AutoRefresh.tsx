@@ -90,7 +90,7 @@ export function AutoRefresh({ lastId = "0" }: { lastId?: string }) {
     >
       <span className="live-dot" />
       {live
-        ? `Live${activeNow !== null ? ` · ${activeNow} on page now` : ""} · ${ago}s`
+        ? `Live${activeNow !== null ? ` · ${activeNow} on page` : ""}${ago > 5 ? ` · ${ago}s` : ""}`
         : "Paused"}
     </button>
   );

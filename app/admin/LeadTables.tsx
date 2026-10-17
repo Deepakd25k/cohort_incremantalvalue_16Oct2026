@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export type LeadRow = {
   id: string;
@@ -65,6 +65,7 @@ function waLink(l: LeadRow, siteUrl: string, batchStart: string) {
 
 export function FollowUps({ rows, siteUrl, batchStart }: { rows: LeadRow[]; siteUrl: string; batchStart: string }) {
   const [data, setData] = useState(rows);
+  useEffect(() => setData(rows), [rows]); // new leads appear without a page reload
   const [savedId, setSavedId] = useState<string | null>(null);
   const update = async (id: string, patch: Partial<LeadRow>) => {
     setData((d) => d.map((r) => (r.id === id ? { ...r, ...patch } : r)));
@@ -131,6 +132,7 @@ export function FollowUps({ rows, siteUrl, batchStart }: { rows: LeadRow[]; site
               </td>
               <td>
                 <input
+                  key={`${l.id}-${l.updated_at}`}
                   className="note"
                   defaultValue={l.followup_note || ""}
                   placeholder="Add note"
@@ -160,6 +162,7 @@ export function FollowUps({ rows, siteUrl, batchStart }: { rows: LeadRow[]; site
 
 export function Students({ rows }: { rows: LeadRow[] }) {
   const [data, setData] = useState(rows);
+  useEffect(() => setData(rows), [rows]);
   const update = (id: string, patch: Partial<LeadRow>) => {
     setData((d) => d.map((r) => (r.id === id ? { ...r, ...patch } : r)));
     save(id, patch);

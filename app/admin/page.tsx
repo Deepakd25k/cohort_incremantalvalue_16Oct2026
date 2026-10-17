@@ -29,6 +29,15 @@ function rangeStart(r: Range) {
 const n = (v: unknown) => Number(v || 0);
 const fmt = (v: number) => v.toLocaleString("en-IN");
 const pct = (a: number, b: number) => (b ? ((a / b) * 100).toFixed(1) + "%" : "–");
+const dur = (sec: number) => (sec >= 3600 ? `${Math.floor(sec / 3600)}h ${Math.round((sec % 3600) / 60)}m` : sec >= 60 ? `${Math.floor(sec / 60)}m ${Math.round(sec % 60)}s` : `${Math.round(sec)}s`);
+const ICONS: Record<string, string> = {
+  users: "M16 19v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1M9.5 10a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M21 19v-1a4 4 0 0 0-3-3.87M15 3.13a3.5 3.5 0 0 1 0 6.75",
+  bounce: "M3 12h13M12 7l5 5-5 5M21 4v16",
+  scroll: "M12 3v18M7 16l5 5 5-5M7 8l5-5 5 5",
+  lead: "M4 4h16v16H4zM8 9h8M8 13h5",
+  check: "M20 6 9 17l-5-5",
+  rupee: "M6 4h12M6 9h12M14 20 7 13h2a4 4 0 0 0 0-8",
+};
 const rupees = (paise: number) => "₹" + fmt(Math.round(paise / 100));
 const time = (t: string) =>
   new Date(t).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
@@ -81,7 +90,8 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
         from s`,
     sql`select count(distinct visitor_id)::int v from events where ts >= ${from}::timestamptz`,
     sql`select name, count(distinct session_id)::int c from events
-         where ts >= ${from}::timestamptz and name in ('page_view','cta_click','form_open','checkout_open','checkout_dismissed','payment_failed','payment_success')
+         where ts >= ${from}::timestamptz and name in ('page_view','cta_click','form_open','lead_submit','checkout_open','checkout_dismissed','payment_failed','payment_success')
+           and not (name = 'lead_submit' and props->>'test' = 'true')
          group by name`,
     sql`select count(*)::int leads,
                count(*) filter (where status = 'paid')::int paid,
@@ -151,37 +161,41 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
     { l: "Landing page view", v: n(step.page_view) },
     { l: "CTA clicked", v: n(step.cta_click) },
     { l: "Form opened", v: n(step.form_open) },
-    { l: "Form submitted", v: n(L.leads) },
+    { l: "Form submitted", v: n(step.lead_submit) },
     { l: "Checkout opened", v: n(step.checkout_open) },
     { l: "Paid", v: n(L.paid) },
   ];
   const top = Math.max(FUNNEL[0].v, 1);
 
   const KPIS = [
-    { l: "Visitors", v: fmt(n(visitors[0].v)), s: `${fmt(sessions)} sessions` },
-    { l: "Bounce rate", v: pct(n(s.bounced), sessions), s: `avg ${Math.round(n(s.avg_secs))}s on page` },
-    { l: "Avg scroll", v: Math.round(n(s.avg_depth)) + "%", s: "of page" },
-    { l: "Leads", v: fmt(n(L.leads)), s: `${pct(n(L.leads), sessions)} of sessions` + (n(L.test_leads) ? ` · +${n(L.test_leads)} test` : "") },
-    { l: "Enrolled", v: fmt(n(L.paid)), s: `${pct(n(L.paid), sessions)} conv. rate` },
-    { l: "Revenue", v: rupees(n(L.revenue)), s: `${n(L.abandoned)} abandoned · ${n(L.recovered)} recovered` },
+    { l: "Visitors", v: fmt(n(visitors[0].v)), s: `${fmt(sessions)} sessions`, ic: "users" },
+    { l: "Bounce rate", v: pct(n(s.bounced), sessions), s: `avg ${dur(n(s.avg_secs))} on page`, ic: "bounce" },
+    { l: "Avg scroll", v: Math.round(n(s.avg_depth)) + "%", s: "of the page", ic: "scroll" },
+    { l: "Leads", v: fmt(n(L.leads)), s: `${pct(n(L.leads), sessions)} of sessions` + (n(L.test_leads) ? ` · +${n(L.test_leads)} test` : ""), ic: "lead" },
+    { l: "Enrolled", v: fmt(n(L.paid)), s: `${pct(n(L.paid), sessions)} conversion`, ic: "check" },
+    { l: "Revenue", v: rupees(n(L.revenue)), s: `${n(L.abandoned)} abandoned · ${n(L.recovered)} recovered`, ic: "rupee", accent: true },
   ];
 
   return (
     <main className="admin">
       <div className="admin-top">
         <div className="wrap">
-          <Logo />
-          <form method="post" action="/api/admin/logout">
-            <button className="btn btn-sm" style={{ background: "var(--ink)", boxShadow: "none" }}>
-              Log out
-            </button>
-          </form>
+          <div className="admin-title">
+            <Logo />
+            <span className="admin-crumb">Dashboard</span>
+          </div>
+          <div className="admin-top-right">
+            <AutoRefresh lastId={activity[0]?.id ?? "0"} />
+            <form method="post" action="/api/admin/logout">
+              <button className="btn-ghost">Log out</button>
+            </form>
+          </div>
         </div>
       </div>
 
       <div className="wrap admin-main">
         <div className="admin-bar">
-          <nav className="admin-ranges">
+          <nav className="admin-ranges" aria-label="Date range">
             {(Object.keys(RANGES) as Range[]).map((r) => (
               <Link key={r} href={`/admin?r=${r}`} className={r === range ? "on" : ""}>
                 {RANGES[r]}
@@ -189,15 +203,14 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
             ))}
           </nav>
           <div className="admin-actions">
-            <AutoRefresh lastId={activity[0]?.id ?? "0"} />
             <InternalBadge />
-            <a className="btn btn-sm" href="/api/admin/export">
+            <a className="btn-ghost" href="/api/admin/export">
               Leads CSV
             </a>
-            <a className="btn btn-sm" href="/api/admin/export?status=paid">
+            <a className="btn-ghost" href="/api/admin/export?status=paid">
               Students CSV
             </a>
-            <Link className="btn btn-sm" href="/admin/setup">
+            <Link className="btn-ghost" href="/admin/setup">
               Setup check
             </Link>
             <ResetButton />
@@ -206,8 +219,15 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
 
         <section className="kpis">
           {KPIS.map((k) => (
-            <div className="kpi" key={k.l}>
-              <span>{k.l}</span>
+            <div className={`kpi ${k.accent ? "kpi-accent" : ""}`} key={k.l}>
+              <div className="kpi-head">
+                <span>{k.l}</span>
+                <i aria-hidden>
+                  <svg viewBox="0 0 24 24" width="16" height="16">
+                    <path d={ICONS[k.ic]} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </i>
+              </div>
               <b>{k.v}</b>
               <small>{k.s}</small>
             </div>
@@ -221,9 +241,12 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
             <div className="funnel">
               {FUNNEL.map((f, i) => (
                 <div className="funnel-row" key={f.l} title={`${f.l}: ${fmt(f.v)} (${pct(f.v, FUNNEL[0].v)} of LPV)`}>
-                  <span className="lbl">{f.l}</span>
+                  <span className="lbl">
+                    {f.l}
+                    {i > 0 && <em className="step-conv">{pct(f.v, FUNNEL[i - 1].v)} of previous</em>}
+                  </span>
                   <div className="bar-track">
-                    <div className="bar" style={{ width: `${(f.v / top) * 100}%` }} />
+                    <div className="bar" style={{ width: `${Math.min((f.v / top) * 100, 100)}%` }} />
                   </div>
                   <span className="val">
                     {fmt(f.v)}
@@ -250,7 +273,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
                       {id === "for" ? "Who it's for" : id}
                     </span>
                     <div className="bar-track">
-                      <div className="bar" style={{ width: `${sessions ? (v / sessions) * 100 : 0}%` }} />
+                      <div className="bar" style={{ width: `${sessions ? Math.min((v / sessions) * 100, 100) : 0}%` }} />
                     </div>
                     <span className="val">
                       {fmt(v)}

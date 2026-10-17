@@ -12,6 +12,7 @@ function detail(e: LiveEvent) {
   const p = e.props || {};
   if (e.name === "scroll") return `${p.depth}%`;
   if (e.name === "section_view") return String(p.id ?? "");
+  if (e.name === "paid") return `₹ paid · lead ${p.lead}${p.test ? " · test" : ""}`;
   if (e.name === "lead_submit") return `lead ${p.lead}${p.test ? " · test" : ""}${p.repeat ? " · repeat" : ""}`;
   return Object.values(p).join(", ").slice(0, 40);
 }
@@ -69,7 +70,7 @@ export function LiveFeed({ initial }: { initial: LiveEvent[] }) {
           {rows.map((a) => (
             <tr key={a.id} className={fresh.has(a.id) ? "row-new" : ""}>
               <td>{time(a.ts)}</td>
-              <td>{a.name}</td>
+              <td><span className={`ev ev-${a.name}`}>{a.name.replace("_", " ")}</span></td>
               <td>{detail(a)}</td>
               <td>{a.utm_source || "direct"}</td>
               <td>{a.device || "–"}</td>

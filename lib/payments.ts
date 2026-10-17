@@ -15,6 +15,8 @@ type Lead = {
   utm_source: string | null;
   utm_campaign: string | null;
   utm_content: string | null;
+  visitor_id: string | null;
+  session_id: string | null;
 };
 
 // Marks a lead as paid exactly once. Called from both the client verify route and the Razorpay webhook.
@@ -24,10 +26,16 @@ export async function markPaid(orderId: string, paymentId: string, ctx?: { ip?: 
     update leads
        set status = 'paid', razorpay_payment_id = ${paymentId}, paid_at = now(), updated_at = now()
      where razorpay_order_id = ${orderId} and status <> 'paid'
-     returning id, name, phone, email, profile, fbp, fbc, is_test, utm_source, utm_campaign, utm_content`) as Lead[];
+     returning id, name, phone, email, profile, fbp, fbc, is_test, utm_source, utm_campaign, utm_content, visitor_id, session_id`) as Lead[];
 
   const lead = rows[0];
   if (!lead) return null; // already paid or unknown order
+
+  // Wakes the live /admin dashboard immediately.
+  if (lead.visitor_id && lead.session_id)
+    await sql`insert into events (visitor_id, session_id, name, props, path, utm_source, utm_campaign, utm_content)
+              values (${lead.visitor_id}, ${lead.session_id}, 'paid', ${JSON.stringify({ lead: lead.id.slice(0, 8), test: lead.is_test })}::jsonb, '/',
+                      ${lead.utm_source}, ${lead.utm_campaign}, ${lead.utm_content})`.catch(() => {});
 
   if (!lead.is_test || process.env.META_TEST_EVENT_CODE)
     await sendCapi({
