@@ -21,14 +21,16 @@ export const COURSE = {
 };
 
 // Accepts "cohort.incrementalvalue.in" or a full URL; a bad value must never crash the page.
+// Falls back to the live domain so robots.txt, sitemap and structured data never point to localhost.
+const LIVE_URL = "https://cohort.incrementalvalue.in";
 function siteUrl() {
   const raw = (process.env.NEXT_PUBLIC_SITE_URL || "").trim().replace(/\/+$/, "");
-  if (!raw) return "http://localhost:3000";
+  if (!raw) return LIVE_URL;
   const withProto = /^https?:\/\//.test(raw) ? raw : `https://${raw}`;
   try {
     return new URL(withProto).origin;
   } catch {
-    return "http://localhost:3000";
+    return LIVE_URL;
   }
 }
 export const SITE_URL = siteUrl();

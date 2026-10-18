@@ -1,0 +1,27 @@
+# The 2027 D2C Growth Cohort by incrementalvalue
+
+> A 4-weekend live cohort (₹2,999) that teaches how a D2C brand actually makes money, beyond the Ads Manager. Taught live in Hinglish on Google Meet by Deepak Gupta, Performance Marketing Lead in D2C with ₹15Cr+ in ad spend managed in the last 2 years.
+
+## Key facts
+- Price: ₹2,999, all inclusive. No upsells.
+- Dates: 28 Nov 2026 to 20 Dec 2026, Saturdays and Sundays, 11:00 AM to 2:30 PM IST (3 hours + 30 minutes of live doubts).
+- Enrolment closes: 27 Nov 2026, 11:59 PM IST.
+- Seats: 50.
+- Format: live on Google Meet, taught in Hinglish; slides and sheets in English. Recordings and class notes included. 1 month of WhatsApp support after the course.
+- Who it is for: marketers, freelancers and early-stage founders who already run Meta ads. Not for complete beginners.
+- Refund: attend the first class; if it is not for you, ask within 24 hours of that class for a 100% refund.
+- No certificate and no job guarantee. Includes a career kit: resume help, outreach to brands and interview prep.
+
+## What you learn
+- Weekend 1, How D2C really works: how money flows from ad to delivery; the D2C stack (Shopify, checkout, Shiprocket, WhatsApp, GA4); unit economics, CM1/CM2/CM3 and break-even ROAS; why a brand at 4X ROAS can still lose money.
+- Weekend 2, Ads that make profit: Meta Ads beyond the dashboard (ICPs, personas, creative strategy, vernacular ads, account structure, when to scale); Google Search, Shopping and Performance Max; where Amazon and Blinkit fit.
+- Weekend 3, Data and conversion: GA4, GTM, Pixel + Conversions API; why Meta, GA4 and Shopify never match; CRO for landing pages, product pages and checkout; COD vs prepaid.
+- Weekend 4, RTO, retention, AI and career: the playbook that took RTO from 25% to 8%; COD checks, NDR, delivery and customer communication; WhatsApp and Bitespeed flows; n8n automations for creatives and ad copy; talking to founders; resume, outreach and interviews.
+
+## About the instructor
+Deepak Gupta: 5 years in D2C performance marketing across fashion, card games, FMCG, beauty and kidswear. ₹15Cr+ ad spend in the last 2 years across Meta, Google, Amazon and Blinkit. Results include RTO cut from 25% to 8% for a D2C brand, CAC from ₹1,500 to ₹500 by fixing CRO and attribution, and 4.5X average blended ROAS.
+
+## Links
+- Course page and enrolment: https://cohort.incrementalvalue.in/
+- Refund policy: https://cohort.incrementalvalue.in/refund
+- Terms: https://cohort.incrementalvalue.in/terms

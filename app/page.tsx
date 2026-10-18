@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import Link from "next/link";
-import { COURSE } from "@/lib/config";
+import { COURSE, SITE_URL } from "@/lib/config";
 import { CTA, EnrollProvider, LockIcon } from "@/components/Enroll";
 import { Faq, SeatCounter, StickyBar } from "@/components/Bits";
 import { PageTracker } from "@/components/PageTracker";
@@ -144,58 +144,100 @@ const GET = [
   ["Career kit", "Resume review, how to reach brands, interview prep from someone who hires"],
 ];
 
+// Plain text, so the same answers feed the page and the FAQ structured data for Google and AI search.
 const FAQS = [
-  { q: "What language is the class in?", a: <p>Hinglish. All slides and sheets are in English.</p> },
+  { q: "What language is the class in?", a: "Hinglish. All slides and sheets are in English." },
   {
     q: "Will I get recordings?",
-    a: (
-      <p>
-        Yes. Every class is recorded and shared in the batch group along with class notes. You can rewatch them till {COURSE.supportUntil}. Doubts are
-        solved live, so try to attend.
-      </p>
-    ),
+    a: `Yes. Every class is recorded and shared in the batch group along with class notes. You can rewatch them till ${COURSE.supportUntil}. Doubts are solved live, so try to attend.`,
   },
-  { q: "I am a beginner. Can I join?", a: <p>You need to know the basics of Meta Ads Manager. If you have never run an ad, this is not the right course yet.</p> },
+  { q: "I am a beginner. Can I join?", a: "You need to know the basics of Meta Ads Manager. If you have never run an ad, this is not the right course yet." },
   {
     q: "What if I miss a class?",
-    a: (
-      <p>
-        Watch the recording and go through the class notes, both shared in the batch WhatsApp group. Ask about anything you did not get in the next
-        doubt slot or on WhatsApp.
-      </p>
-    ),
+    a: "Watch the recording and go through the class notes, both shared in the batch WhatsApp group. Ask about anything you did not get in the next doubt slot or on WhatsApp.",
   },
   {
     q: "There are 50 people. Will my doubts get answered?",
-    a: <p>Yes. Every class ends with 30 minutes of live doubts, and the WhatsApp group stays open for a month after the course. That is why seats are capped at 50.</p>,
+    a: "Yes. Every class ends with 30 minutes of live doubts, and the WhatsApp group stays open for a month after the course. That is why seats are capped at 50.",
   },
   {
     q: "Isn't all this free on YouTube?",
-    a: (
-      <p>
-        YouTube teaches one tool per video. This cohort connects them: how ads, website, delivery and margins affect each other, using real brand numbers,
-        with someone answering questions about your own account.
-      </p>
-    ),
+    a: "YouTube teaches one tool per video. This cohort connects them: how ads, website, delivery and margins affect each other, using real brand numbers, with someone answering questions about your own account.",
   },
   {
     q: "My brand sells mostly on Amazon or Blinkit. Is this useful?",
-    a: <p>Yes. Unit economics, RTO, tracking and growth thinking apply to every channel, and Weekend 2 covers where Amazon and Blinkit fit in the plan.</p>,
+    a: "Yes. Unit economics, RTO, tracking and growth thinking apply to every channel, and Weekend 2 covers where Amazon and Blinkit fit in the plan.",
   },
   {
     q: "What is the refund policy?",
-    a: (
-      <p>
-        Attend the first class. If you feel it is not for you, message us within 24 hours of that class and get a 100% refund. After that, no
-        refunds.
-      </p>
-    ),
+    a: "Attend the first class. If you feel it is not for you, message us within 24 hours of that class and get a 100% refund. After that, no refunds.",
   },
-  { q: "Do I get a certificate?", a: <p>No. You get skills you can show in your work and explain in an interview. That matters more.</p> },
-  { q: "Is there a job guarantee?", a: <p>No. You get a career kit: resume help, how to reach out to brands, and interview prep from someone who hires D2C marketers.</p> },
-  { q: "What happens after I pay?", a: <p>You get a WhatsApp confirmation with the batch group link, class timings and the Google Meet link.</p> },
-  { q: "Are there any other charges or upsells?", a: <p>No. {price} is the full price. Nothing to buy later.</p> },
+  { q: "Do I get a certificate?", a: "No. You get skills you can show in your work and explain in an interview. That matters more." },
+  { q: "Is there a job guarantee?", a: "No. You get a career kit: resume help, how to reach out to brands, and interview prep from someone who hires D2C marketers." },
+  { q: "What happens after I pay?", a: "You get a WhatsApp message with the batch group link, class timings and the Google Meet link." },
+  { q: "Are there any other charges or upsells?", a: `No. ${price} is the full price. Nothing to buy later.` },
 ];
+
+
+// Structured data: tells Google and AI assistants what this course is, who teaches it, when and for how much.
+function jsonLd() {
+  const org = `${SITE_URL}/#org`;
+  const deepak = `${SITE_URL}/#deepak`;
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "Organization", "@id": org, name: COURSE.brand, url: SITE_URL, logo: `${SITE_URL}/icon.svg` },
+      {
+        "@type": "Person",
+        "@id": deepak,
+        name: COURSE.instructor,
+        jobTitle: COURSE.instructorTitle,
+        image: `${SITE_URL}${COURSE.photo}`,
+        description: "Performance marketer with 5 years in D2C and ₹15Cr+ in ad spend managed in the last 2 years across Meta, Google, Amazon and Blinkit.",
+      },
+      {
+        "@type": "Course",
+        name: COURSE.name,
+        description:
+          "A 4-weekend live cohort for marketers, freelancers and early-stage founders who run Meta ads. Learn how a D2C brand actually makes money: unit economics and CM3, RTO reduction, tracking (GA4, GTM, Pixel + CAPI), Meta and Google ads, Amazon and Blinkit, CRO, retention and AI workflows. Taught live in Hinglish on Google Meet, with recordings and 1 month of WhatsApp support.",
+        url: SITE_URL,
+        inLanguage: ["hi-IN", "en-IN"],
+        provider: { "@id": org },
+        instructor: { "@id": deepak },
+        teaches: ["D2C unit economics", "CM3 and break-even ROAS", "Reducing RTO", "Meta Ads", "Google Ads", "GA4, GTM and Conversions API", "CRO", "Retention", "AI for marketing"],
+        offers: {
+          "@type": "Offer",
+          category: "Paid",
+          price: COURSE.price,
+          priceCurrency: "INR",
+          availability: "https://schema.org/InStock",
+          validThrough: COURSE.enrollClosesAt,
+          url: SITE_URL,
+        },
+        hasCourseInstance: {
+          "@type": "CourseInstance",
+          courseMode: "Online",
+          location: { "@type": "VirtualLocation", url: SITE_URL },
+          startDate: "2026-11-28",
+          endDate: "2026-12-20",
+          courseSchedule: {
+            "@type": "Schedule",
+            repeatFrequency: "P1W",
+            byDay: ["https://schema.org/Saturday", "https://schema.org/Sunday"],
+            startTime: "11:00",
+            endTime: "14:30",
+            scheduleTimezone: "Asia/Kolkata",
+          },
+          instructor: { "@id": deepak },
+        },
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: FAQS.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+      },
+    ],
+  };
+}
 
 const Check = () => (
   <svg className="ic ic-yes" viewBox="0 0 20 20" aria-hidden>
@@ -211,6 +253,7 @@ const Cross = () => (
 export default function Home() {
   return (
     <EnrollProvider>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd()).replace(/</g, "\\u003c") }} />
       <PageTracker />
 
       <header className="topbar">
@@ -603,7 +646,7 @@ export default function Home() {
           <div className="wrap narrow">
             <p className="kicker">FAQ</p>
             <h2>Questions, answered</h2>
-            <Faq items={FAQS} />
+            <Faq items={FAQS.map((f) => ({ q: f.q, a: <p>{f.a}</p> }))} />
             <div className="final">
               <h2>
                 Stop guessing inside the dashboard. <span className="hl">Learn how the business works.</span>
