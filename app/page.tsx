@@ -569,6 +569,10 @@ export default function Home() {
                   <b>{COURSE.batchStart}</b>
                 </li>
                 <li>
+                  <span>Enrolment closes</span>
+                  <b>{COURSE.enrollCloses}, 11:59 PM</b>
+                </li>
+                <li>
                   <span>Schedule</span>
                   <b>{COURSE.schedule}</b>
                 </li>
@@ -605,7 +609,7 @@ export default function Home() {
                 Stop guessing inside the dashboard. <span className="hl">Learn how the business works.</span>
               </h2>
               <p className="body">
-                Batch starts {COURSE.batchStart} · Only {COURSE.seats} seats
+                Batch starts {COURSE.batchStart} · Only {COURSE.seats} seats · Enrolment closes {COURSE.enrollCloses}
               </p>
               <CTA source="final">Reserve my seat · {price}</CTA>
             </div>

@@ -11,6 +11,9 @@ const PROFILES = ["Working marketer", "Freelancer / Agency", "Fresher / Job seek
 export async function POST(req: Request) {
   if (!hasDb()) return NextResponse.json({ error: "Enrollment is not open yet." }, { status: 503 });
 
+  if (Date.now() > new Date(COURSE.enrollClosesAt).getTime())
+    return NextResponse.json({ error: "Enrolment for this batch is closed." }, { status: 409 });
+
   const b = await req.json().catch(() => ({}));
   const name = clip(b.name, 80)?.trim();
   const email = clip(b.email, 120)?.trim().toLowerCase();

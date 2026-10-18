@@ -5,9 +5,21 @@ import { COURSE } from "@/lib/config";
 import { track } from "@/lib/track-client";
 import { CTA } from "./Enroll";
 
+// "Enrolment closes 27 Nov", or a countdown in the last week.
+export function closingText(now = Date.now()) {
+  const ms = new Date(COURSE.enrollClosesAt).getTime() - now;
+  if (ms <= 0) return "Enrolment closed";
+  const days = Math.ceil(ms / 86400000);
+  if (days === 1) return "Enrolment closes today";
+  if (days <= 7) return `Enrolment closes in ${days} days`;
+  return `Enrolment closes ${COURSE.enrollCloses}`;
+}
+
 export function SeatCounter({ light = false }: { light?: boolean }) {
   const [left, setLeft] = useState<number | null>(null);
+  const [closing, setClosing] = useState(`Enrolment closes ${COURSE.enrollCloses}`);
   useEffect(() => {
+    setClosing(closingText());
     fetch("/api/seats")
       .then((r) => r.json())
       .then((d) => setLeft(d.left))
@@ -28,6 +40,7 @@ export function SeatCounter({ light = false }: { light?: boolean }) {
           <b>{left} of {COURSE.seats} seats</b> left
         </>
       )}
+      {left !== 0 && <> · <span className="nowrap">{closing}</span></>}
       </span>
     </p>
   );
@@ -45,7 +58,7 @@ export function StickyBar() {
     <div className={`sticky-bar ${show ? "on" : ""}`} aria-hidden={!show}>
       <div>
         <b>₹{COURSE.price.toLocaleString("en-IN")}</b>
-        <span>Starts {COURSE.batchStart.replace(/^\w+, /, "")}</span>
+        <span>Enrolment closes {COURSE.enrollCloses}</span>
       </div>
       <CTA source="sticky_bar" className="btn">
         Reserve my seat

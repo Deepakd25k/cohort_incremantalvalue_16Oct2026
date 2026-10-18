@@ -759,3 +759,7 @@ h2 { font-size: 26px; font-weight: 750; letter-spacing: -.03em; line-height: 1.1
 .pay-redirect { background: rgba(11,16,32,.88); z-index: 70; flex-direction: column; gap: 14px; color: #fff; font-weight: 600; font-size: 15px; text-align: center; }
 .spinner { width: 36px; height: 36px; border-radius: 50%; border: 3px solid rgba(255,255,255,.3); border-top-color: #fff; animation: spin .7s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* Urgency line */
+.nowrap { white-space: nowrap; }
+.modal-kicker { padding-right: 44px; }

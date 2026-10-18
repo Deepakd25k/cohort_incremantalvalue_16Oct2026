@@ -9,6 +9,8 @@ export const COURSE = {
   seats: 50,
   showSeatCounterAfter: 25, // live "seats left" appears once this many seats are sold
   batchStart: "Sat, 28 Nov 2026",
+  enrollCloses: "27 Nov", // shown on the page and in ads
+  enrollClosesAt: "2026-11-27T23:59:59+05:30", // after this the form stops taking new enrolments
   batchEnd: "Sun, 20 Dec 2026",
   supportUntil: "20 Jan 2027",
   schedule: "Sat & Sun, 11:00 AM – 2:30 PM",

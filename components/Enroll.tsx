@@ -160,7 +160,7 @@ export function EnrollProvider({ children }: { children: ReactNode }) {
             <button className="modal-close" aria-label="Close" onClick={() => !busy && setOpen(false)}>
               ×
             </button>
-            <p className="kicker">Batch starts {COURSE.batchStart}</p>
+            <p className="kicker modal-kicker">Starts {COURSE.batchStart.replace(/^\w+, | \d{4}$/g, "")} · Closes {COURSE.enrollCloses}</p>
             <h3 id="enroll-title">Reserve your seat</h3>
             <p className="modal-sub">
               Fill this in, then pay <b>₹{COURSE.price.toLocaleString("en-IN")}</b> securely. Batch details come on WhatsApp.
