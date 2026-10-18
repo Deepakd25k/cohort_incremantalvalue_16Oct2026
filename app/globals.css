@@ -763,3 +763,4 @@ h2 { font-size: 26px; font-weight: 750; letter-spacing: -.03em; line-height: 1.1
 /* Urgency line */
 .nowrap { white-space: nowrap; }
 .modal-kicker { padding-right: 44px; }
+.tag-ai { background: #ece9ff; color: #5b3df5; margin-left: 4px; }

@@ -39,6 +39,9 @@ const ICONS: Record<string, string> = {
   rupee: "M6 4h12M6 9h12M14 20 7 13h2a4 4 0 0 0 0-8",
 };
 const rupees = (paise: number) => "₹" + fmt(Math.round(paise / 100));
+
+// AI assistants that send visitors: ChatGPT adds utm_source=chatgpt.com, the others show up in the referrer.
+const AI_SOURCES = ["ChatGPT", "Perplexity", "Claude", "Gemini", "Copilot", "DeepSeek"];
 const time = (t: string) =>
   new Date(t).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
 
@@ -132,6 +135,32 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
     sql`select * from leads where status = 'paid' order by paid_at`,
     sql`select id::text as id, ts, name, props, visitor_id, session_id, utm_source, device from events
           where ts > now() - interval '5 minutes' order by id desc limit 300`,
+    sql`
+      with f as (
+        select distinct on (session_id) session_id, lower(coalesce(referrer, '')) ref, lower(coalesce(utm_source, '')) us
+          from events where name = 'page_view' and ts >= ${from}::timestamptz order by session_id, ts),
+      s as (
+        select session_id, case
+          when us like '%chatgpt%' or ref like '%chatgpt.com%' or ref like '%openai.com%' then 'ChatGPT'
+          when us like '%perplexity%' or ref like '%perplexity.ai%' then 'Perplexity'
+          when us like '%claude%' or ref like '%claude.ai%' then 'Claude'
+          when us like '%gemini%' or ref like '%gemini.google.com%' or ref like '%bard.google.com%' then 'Gemini'
+          when us like '%copilot%' or ref like '%copilot.microsoft.com%' or ref like '%bing.com/chat%' then 'Copilot'
+          when us like '%deepseek%' or ref like '%deepseek.com%' then 'DeepSeek'
+          when us in ('meta', 'facebook', 'fb', 'instagram', 'ig') then 'Meta ads'
+          when us <> '' then 'UTM: ' || us
+          when ref like '%instagram.com%' then 'Instagram'
+          when ref like '%facebook.com%' then 'Facebook'
+          when ref like '%linkedin.com%' or ref like '%lnkd.in%' then 'LinkedIn'
+          when ref like '%youtube.com%' then 'YouTube'
+          when ref like '%google.%' then 'Google search'
+          when ref like '%bing.com%' then 'Bing search'
+          when ref = '' or ref like '%incrementalvalue.in%' then 'Direct / unknown'
+          else split_part(split_part(ref, '://', 2), '/', 1) end src
+          from f)
+      select s.src, count(*)::int sessions, count(l.id)::int leads, count(l.id) filter (where l.status = 'paid')::int paid
+        from s left join leads l on l.session_id = s.session_id and not l.is_test
+       group by 1 order by 2 desc limit 30`,
     ]);
   } catch (err) {
     console.error("admin queries failed", err);
@@ -146,7 +175,8 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
       </main>
     );
   }
-  const [sess, visitors, steps, leadAgg, sections, devices, utmRows, daily, pending, students, activity] = data;
+  const [sess, visitors, steps, leadAgg, sections, devices, utmRows, daily, pending, students, activity, sources] = data;
+  const aiSessions = sources.filter((r) => AI_SOURCES.includes(r.src)).reduce((t, r) => t + n(r.sessions), 0);
   const iso = (v: unknown) => (v ? new Date(v as string).toISOString() : null);
   const toRows = (rows: typeof pending) =>
     rows.map((r) => ({ ...r, created_at: iso(r.created_at), updated_at: iso(r.updated_at), paid_at: iso(r.paid_at), reminder_sent_at: iso(r.reminder_sent_at), confirmation_sent_at: iso(r.confirmation_sent_at) })) as LeadRow[];
@@ -322,6 +352,43 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
                 {!utmRows.length && (
                   <tr>
                     <td colSpan={8}>No data yet.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section className="panel">
+          <h3>Where visitors come from</h3>
+          <p className="sub">
+            First visit of each session. <b>{fmt(aiSessions)}</b> session{aiSessions === 1 ? "" : "s"} from AI assistants (ChatGPT, Perplexity, Claude,
+            Gemini, Copilot).
+          </p>
+          <div className="tbl-wrap">
+            <table className="tbl">
+              <thead>
+                <tr>
+                  <th>Source</th>
+                  <th className="num">Sessions</th>
+                  <th className="num">Leads</th>
+                  <th className="num">Paid</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sources.map((r) => (
+                  <tr key={r.src}>
+                    <td>
+                      {r.src} {AI_SOURCES.includes(r.src) && <span className="tag tag-ai">AI</span>}
+                    </td>
+                    <td className="num">{fmt(n(r.sessions))}</td>
+                    <td className="num">{fmt(n(r.leads))}</td>
+                    <td className="num">{fmt(n(r.paid))}</td>
+                  </tr>
+                ))}
+                {!sources.length && (
+                  <tr>
+                    <td colSpan={4}>No data yet.</td>
                   </tr>
                 )}
               </tbody>
