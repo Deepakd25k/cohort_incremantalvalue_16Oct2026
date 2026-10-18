@@ -2,7 +2,7 @@ import crypto from "crypto";
 import { after, NextResponse } from "next/server";
 import { db, hasDb } from "@/lib/db";
 import { createOrder } from "@/lib/razorpay";
-import { sendCapi } from "@/lib/meta";
+import { CHECKOUT_EVENT, sendCapi } from "@/lib/meta";
 import { COURSE } from "@/lib/config";
 import { clientIp, clip, normalisePhone } from "@/lib/request";
 
@@ -72,7 +72,7 @@ export async function POST(req: Request) {
   // 2. Meta CAPI: a fresh event_id per submission so Meta never drops a repeat as a duplicate.
   //    Test leads are sent only while META_TEST_EVENT_CODE is set (they land in Test Events, not in ads data).
   const submitId = crypto.randomUUID().slice(0, 12);
-  const eventIds = { lead: `lead_${id}_${submitId}`, checkout: `ic_${id}_${submitId}` };
+  const eventIds = { lead: `lead_${id}_${submitId}`, checkout: `ic_${id}_${submitId}`, cohortCheckout: `cci_${id}_${submitId}` };
   const ctx = { email, phone, name, fbp: b.fbp, fbc: b.fbc, ip: clientIp(req), ua: req.headers.get("user-agent"), externalId: id };
   const sendToMeta = !isTest || Boolean(process.env.META_TEST_EVENT_CODE);
   if (sendToMeta)
@@ -90,6 +90,10 @@ export async function POST(req: Request) {
   }
   const order = orderResult.value as { id: string };
   await sql`update leads set razorpay_order_id = ${order.id}, status = case when status = 'paid' then 'paid' else 'checkout' end where id = ${id}`;
+
+  // Lead saved + order created: payment is really starting. Same event_id as the browser pixel, so Meta counts it once.
+  if (sendToMeta)
+    after(() => sendCapi({ ...ctx, eventName: CHECKOUT_EVENT, eventId: eventIds.cohortCheckout, value: COURSE.price }));
 
   return NextResponse.json({
     leadId: id,

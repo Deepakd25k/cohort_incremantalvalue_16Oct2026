@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { COURSE } from "@/lib/config";
-import { cookie, fbc, ga, ids, isInternal, pixel, track, utm } from "@/lib/track-client";
+import { cookie, fbc, ga, ids, isInternal, pixel, pixelCustom, track, utm } from "@/lib/track-client";
 
 const EnrollCtx = createContext<{ open: (source: string) => void }>({ open: () => {} });
 export const useEnroll = () => useContext(EnrollCtx);
@@ -96,6 +96,7 @@ export function EnrollProvider({ children }: { children: ReactNode }) {
         return;
       }
       track("checkout_open", { source: source.current });
+      pixelCustom("cohort_checkout_initiated_capi", { value: COURSE.price, currency: "INR" }, data.eventIds.cohortCheckout);
 
       const rzp = new window.Razorpay({
         key: data.keyId,

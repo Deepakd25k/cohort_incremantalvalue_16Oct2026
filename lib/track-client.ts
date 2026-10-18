@@ -96,6 +96,11 @@ export function pixel(event: string, params: Dict = {}, eventID?: string) {
   window.fbq?.("track", event, params, eventID ? { eventID } : undefined);
 }
 
+export function pixelCustom(event: string, params: Dict = {}, eventID?: string) {
+  if (isInternal()) return;
+  window.fbq?.("trackCustom", event, params, eventID ? { eventID } : undefined);
+}
+
 export function ga(event: string, params: Dict = {}) {
   if (isInternal()) return;
   window.gtag?.("event", event, params);

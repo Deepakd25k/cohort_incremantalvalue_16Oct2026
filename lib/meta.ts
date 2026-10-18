@@ -4,8 +4,11 @@ import { SITE_URL } from "./config";
 const sha = (v?: string | null) =>
   v ? crypto.createHash("sha256").update(v.trim().toLowerCase()).digest("hex") : undefined;
 
+// Custom event: fires only after the lead is saved AND the Razorpay order exists, i.e. payment really started.
+export const CHECKOUT_EVENT = "cohort_checkout_initiated_capi";
+
 type CapiInput = {
-  eventName: "Lead" | "InitiateCheckout" | "Purchase";
+  eventName: "Lead" | "InitiateCheckout" | "Purchase" | typeof CHECKOUT_EVENT;
   eventId: string;
   email?: string;
   phone?: string; // with country code, digits only
